@@ -15,7 +15,7 @@ import org.hyperledger.fabric.gateway.Network;
 import org.hyperledger.fabric.gateway.Wallet;
 import org.hyperledger.fabric.gateway.Wallets;
 
-public class joinNetwork {
+public class caCar {
 
     static {
         System.setProperty("org.hyperledger.fabric.sdk.service_discovery.as_localhost", "true");

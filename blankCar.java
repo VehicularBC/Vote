@@ -15,7 +15,7 @@ import org.hyperledger.fabric.gateway.Network;
 import org.hyperledger.fabric.gateway.Wallet;
 import org.hyperledger.fabric.gateway.Wallets;
 
-public class joinNetwork {
+public class blankCar {
 
     static {
         System.setProperty("org.hyperledger.fabric.sdk.service_discovery.as_localhost", "true");
@@ -45,7 +45,6 @@ public class joinNetwork {
             System.out.println("error");
         }
         socket.close();  // 4、关闭 Socket 服务
-        }
     }
 
 }
