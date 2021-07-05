@@ -41,6 +41,7 @@ def vote_and_create(conn, addr):#已经认证的车辆收到来自白板车的�
         pass
     else:#返回不为1时，关闭该线程，开启监听，等待下一次申请
         print('You are not the Agent')
+        conn.close()
         pass
 
 if __name__ == '__main__':
