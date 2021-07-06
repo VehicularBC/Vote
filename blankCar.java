@@ -74,6 +74,6 @@ public class blankCar {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return 0;
+        return 0;  // 身份合理返回1，不合理返回0
     }
 }
