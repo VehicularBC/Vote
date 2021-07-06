@@ -6,3 +6,7 @@
         3.白板车辆若可入网并成功收到身份，转为ca车辆；否则入网失败
 
 其中客户端代码为blankCar.java，服务器端代码为caCar.java。SocketThread.java文件是线程代码，服务端处理逻辑都位于该文件中
+
+参考链接：<br>
+1.套接字：https://blog.csdn.net/kangkangwanwan/article/details/78839822 <br>
+2.文件传输：https://zhuanlan.zhihu.com/p/79377902
