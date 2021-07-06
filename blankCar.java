@@ -6,45 +6,74 @@ package org.example;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.Socket;
 import org.hyperledger.fabric.gateway.Contract;
 import org.hyperledger.fabric.gateway.Gateway;
 import org.hyperledger.fabric.gateway.Network;
 import org.hyperledger.fabric.gateway.Wallet;
 import org.hyperledger.fabric.gateway.Wallets;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
 public class blankCar {
+    private String host = "localhost";
+    private int port = 8888;
+    private static String fileName="D:\\[The King's Avatar][09].mp4";
 
-    static {
-        System.setProperty("org.hyperledger.fabric.sdk.service_discovery.as_localhost", "true");
-    }
+    public static int main(String[] args) throws Exception {
+        try {
+            //创建Socket对象
+            Socket socket=new Socket("localhost",8888);
 
-    public static void main(String[] args) throws Exception {
-        // 发送信息到某节点
-        Socket socket = new Socket("192.168.1.100", 10002);
+            //根据输入输出流和服务端连接
+            OutputStream outputStream=socket.getOutputStream();//获取一个输出流，向服务端发送信息
 
-        // 2、获取 Socket 流中输入流
-        OutputStream out = socket.getOutputStream();
-        // 3、使用输出流将指定的数据写出去
-        out.write("IP|user".getBytes());
+            PrintWriter printWriter=new PrintWriter(outputStream);//将输出流包装成打印流
+            printWriter.print("服务端你好，我是balabala");
+            printWriter.flush();
+            socket.shutdownOutput();//关闭输出流
 
-        // 等待节点达成共识返回结果
-        // 读取服务端返回的数据，使用 Socket 读取流
-        InputStream in = socket.getInputStream();
-        byte[] buf = new byte[1024];
-        int len = in.read(buf);
-        String text = new String(buf, 0, len);
+            InputStream inputStream=socket.getInputStream();//获取一个输入流，接收服务端的信息
+            InputStreamReader inputStreamReader=new InputStreamReader(inputStream,"utf-8");//包装成字符流，提高效率
+            BufferedReader bufferedReader=new BufferedReader(inputStreamReader);//缓冲区
+            String info="";
+            String temp=null;//临时变量
+//            while((temp=bufferedReader.readLine())!=null){
+//                info+=temp;
+//                System.out.println("客户端接收服务端发送信息："+info);
+//            }
+            //
+            //将数据写入文件
+            File f = new File("admin.id");
+            OutputStream fos = new FileOutputStream(f);
+            int i;
+            System.out.print("接收中");
+            while ((i=inputStream.read())!=-1) {
+                fos.write(i);
+                System.out.print(".");
+            }
+            //刷新输出流fos
+            fos.flush();
 
-        System.out.println(text);
-        if (text == "1") {
-            // 如果正确接收文件并解压到指定目录
-
-        } else {
-            System.out.println("error");
+            //关闭相对应的资源
+            bufferedReader.close();
+            inputStream.close();
+            printWriter.close();
+            outputStream.close();
+            socket.close();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        socket.close();  // 4、关闭 Socket 服务
+        return 1;
     }
-
 }

@@ -21,8 +21,6 @@ import org.hyperledger.fabric.sdk.security.CryptoSuiteFactory;
 import org.hyperledger.fabric_ca.sdk.HFCAClient;
 import org.hyperledger.fabric_ca.sdk.RegistrationRequest;
 
-//String IPadd = "192.168.3.48";
-
 public class RegisterUser {
 
 //	static {
