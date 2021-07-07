@@ -38,13 +38,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class caCar {
-    private String host = "localhost";
     private int port = 8888;
-    private static String fileName="";
 
     public static void main(String[] args) throws Exception {
         try {
-            ServerSocket serverSocket = new ServerSocket(8888);
+            ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("服务端已启动，等待客户端连接..");
 
             while (true) {
