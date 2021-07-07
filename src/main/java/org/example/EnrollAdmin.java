@@ -32,7 +32,7 @@ public class EnrollAdmin {
 		props.put("pemFile",
 			"src/main/resources/crypto-config/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem");
 		props.put("allowAllHostNames", "true");
-		HFCAClient caClient = HFCAClient.createNewInstance("https://192.168.3.48:7054", props);
+		HFCAClient caClient = HFCAClient.createNewInstance("https://192.168.2.102:7054", props);
 		CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
 		caClient.setCryptoSuite(cryptoSuite);
 
@@ -47,7 +47,7 @@ public class EnrollAdmin {
 
 		// Enroll the admin user, and import the new identity into the wallet.
 		final EnrollmentRequest enrollmentRequestTLS = new EnrollmentRequest();
-		enrollmentRequestTLS.addHost("192.168.3.48");
+		enrollmentRequestTLS.addHost("192.168.2.102");
 		enrollmentRequestTLS.setProfile("tls");
 		Enrollment enrollment = caClient.enroll("admin", "adminpw", enrollmentRequestTLS);
 		Identity user = Identities.newX509Identity("Org1MSP", enrollment);

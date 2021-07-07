@@ -10,18 +10,18 @@ public class ClientTest {
 
 	@Test
 	public void testFabCar() throws Exception {
-//		EnrollAdmin.main(null);
-//		RegisterUser.main(null);
-//		ClientApp.main(null);
+		EnrollAdmin.main(null);
+		RegisterUser.main(null);
+		ClientApp.main(null);
 
 //		FabricDemo.main(null);
 
-		if (true) {
-			if (blankCar.main(null) != 0) {
-//				caCar.main(null);
-			}
-		} else {
-			caCar.main(null);
-		}
+//		if (true) {
+//			if (blankCar.main(null) != 0) {
+////				caCar.main(null);
+//			}
+//		} else {
+//			caCar.main(null);
+//		}
 	}
 }
