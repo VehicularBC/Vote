@@ -56,7 +56,7 @@ public class SocketThread extends Thread {
 
             // Check to see if we've already enrolled the user.
             if (wallet.get(userName) != null) {
-                System.out.println("An identity for the user" + userName + "already exists in the wallet");
+                System.out.println("An identity for the user " + userName + " already exists in the wallet");
                 return;
             }
 

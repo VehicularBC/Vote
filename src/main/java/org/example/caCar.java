@@ -42,7 +42,7 @@ public class caCar {
 
     public static void main(String[] args) throws Exception {
         try {
-            ServerSocket serverSocket = new ServerSocket(port);
+            ServerSocket serverSocket = new ServerSocket(8888);
             System.out.println("服务端已启动，等待客户端连接..");
 
             while (true) {

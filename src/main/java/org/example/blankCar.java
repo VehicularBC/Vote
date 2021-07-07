@@ -31,7 +31,7 @@ public class blankCar {
     public static int main(String[] args) throws Exception {
         try {
             //创建Socket对象
-            Socket socket=new Socket(host, port);
+            Socket socket=new Socket("localhost", 8888);
 
             //根据输入输出流和服务端连接
             OutputStream outputStream=socket.getOutputStream();//获取一个输出流，向服务端发送信息
