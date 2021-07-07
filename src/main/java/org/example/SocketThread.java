@@ -33,7 +33,7 @@ import org.hyperledger.fabric_ca.sdk.RegistrationRequest;
  * Socket多线程处理类 用来处理服务端接收到的客户端请求（处理Socket对象）
  */
 public class SocketThread extends Thread {
-    private String peerHostPort = "https://192.168.3.48:7054";
+    private String peerHostPort = "https://192.168.2.200:7054";
     private Socket socket;
 
     public SocketThread(Socket socket) {
@@ -146,11 +146,11 @@ public class SocketThread extends Thread {
             OutputStream outputStream = socket.getOutputStream();// 获取一个输出流，向服务端发送信息
             // 输出
             PrintWriter printWriter = new PrintWriter(outputStream);// 将输出流包装成打印流
-            printWriter.print("");
+            printWriter.print("test1");
             printWriter.flush();
 
             // 申请身份
-            String newName = "admin";
+            String newName = "gibbon202107071315";
             createNewUser(newName);
             /*发送文件*/
             //读取文件到文件流fis

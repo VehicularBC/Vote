@@ -52,7 +52,7 @@ public class blankCar {
 //            }
             //
             //将数据写入文件
-            File f = new File("admin.id");
+            File f = new File("gggg.id");
             OutputStream fos = new FileOutputStream(f);
             int i;
             System.out.print("接收中");
