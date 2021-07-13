@@ -194,7 +194,7 @@ public class SocketThread extends Thread {
             if (voteresult == 1) {
                 System.out.println("你需要为新车服务");
                 // 申请身份
-                String newName = "gibbon202107071315";
+                String newName = userName;
                 createNewUser(newName);
                 /* 发送文件 */
                 // 读取文件到文件流fis
