@@ -8,9 +8,6 @@ import org.junit.Test;
 
 public class ClientTest {
 	public class GlobalClass {
-		public static String caIPlist = "gibbon";
-		public static int caPort = 8888;
-		public static String myUserName = "gibbon";
 	}
 
 	@Test
@@ -21,7 +18,7 @@ public class ClientTest {
 
 //		FabricDemo.main(null);
 
-		if (false) {
+		if (true) {
 			if (blankCar.main(null) != 0) {
 //				caCar.main(null);
 			}

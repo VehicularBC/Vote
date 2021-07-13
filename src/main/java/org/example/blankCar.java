@@ -29,7 +29,7 @@ public class blankCar {
     public static int main(String[] args) throws Exception {
         String host = "192.168.3.6";
 //        String host = "192.168.3.101";
-        String userName = "gibbon1344";
+        String userName = "gibbon1430";
 
         try {
             //创建Socket对象
