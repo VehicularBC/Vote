@@ -29,6 +29,7 @@ public class blankCar {
     private static String fileName="D:\\[The King's Avatar][09].mp4";
 
     public static int main(String[] args) throws Exception {
+        String userName = "test";
         try {
             //创建Socket对象
             Socket socket=new Socket("localhost", 8888);
@@ -37,7 +38,7 @@ public class blankCar {
             OutputStream outputStream=socket.getOutputStream();//获取一个输出流，向服务端发送信息
 
             PrintWriter printWriter=new PrintWriter(outputStream);//将输出流包装成打印流
-            printWriter.print("服务端你好，我是balabala");
+            printWriter.print("服务端你好，我是" + userName);
             printWriter.flush();
             socket.shutdownOutput();//关闭输出流
 
@@ -52,7 +53,7 @@ public class blankCar {
 //            }
             //
             //将数据写入文件
-            File f = new File("gggg.id");
+            File f = new File(userName + ".id");
             OutputStream fos = new FileOutputStream(f);
             int i;
             System.out.print("接收中");
