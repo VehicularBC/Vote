@@ -24,15 +24,16 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class blankCar {
-    private String host = "localhost";
     private int port = 8888;
-    private static String fileName="D:\\[The King's Avatar][09].mp4";
 
     public static int main(String[] args) throws Exception {
-        String userName = "test";
+        String host = "192.168.3.6";
+//        String host = "192.168.3.101";
+        String userName = "gibbon1344";
+
         try {
             //创建Socket对象
-            Socket socket=new Socket("localhost", 8888);
+            Socket socket=new Socket(host, 8888);
 
             //根据输入输出流和服务端连接
             OutputStream outputStream=socket.getOutputStream();//获取一个输出流，向服务端发送信息

@@ -33,7 +33,7 @@ public class RegisterUser {
 		Properties props = new Properties();
 		props.put("pemFile", "src/main/resources/crypto-config/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem");
 		props.put("allowAllHostNames", "true");
-		HFCAClient caClient = HFCAClient.createNewInstance("https://192.168.2.200:7054", props);
+		HFCAClient caClient = HFCAClient.createNewInstance("https://192.168.3.48:7054", props);
 		CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
 		caClient.setCryptoSuite(cryptoSuite);
 

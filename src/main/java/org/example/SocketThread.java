@@ -41,7 +41,7 @@ import org.hyperledger.fabric.gateway.ContractException;
  * Socket多线程处理类 用来处理服务端接收到的客户端请求（处理Socket对象）
  */
 public class SocketThread extends Thread {
-    private String peerHostPort = "https://192.168.2.200:7054";
+    private String peerHostPort = "https://192.168.3.48:7054";
     private Socket socket;
 
     public SocketThread(Socket socket) {
@@ -134,7 +134,7 @@ public class SocketThread extends Thread {
         }
     }
 
-    public byte[] voteForcar(String carID) { //为新车进行投票，调用链码，返回一个byte类数组，第一个元素为链码返回结果（待测试）
+    public String voteForcar(String carID) { //为新车进行投票，调用链码，返回一个byte类数组，第一个元素为链码返回结果（待测试）
         byte[] voteResult = null;
         try {
             // invoke the voting chaincode
@@ -153,10 +153,10 @@ public class SocketThread extends Thread {
             try (Gateway gateway = builder.connect()) {
                 // get the network and contract
                 Network network = gateway.getNetwork("mychannel");
-                Contract contract = network.getContract("Vote");
+                Contract contract = network.getContract("fabcar");
 
                 voteResult = contract.createTransaction("Vote").submit(carID);
-                System.out.println(new String(voteResult, StandardCharsets.UTF_8));
+//                System.out.println(new String(voteResult, StandardCharsets.UTF_8));
 
             } catch (ContractException | TimeoutException | InterruptedException e) {
                 e.printStackTrace();
@@ -164,7 +164,9 @@ public class SocketThread extends Thread {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return voteResult;
+        String aaa = new String(voteResult, StandardCharsets.UTF_8);
+//        System.out.println(aaa);
+        return aaa;
     }
 
     public void run() {
@@ -188,10 +190,12 @@ public class SocketThread extends Thread {
 //            printWriter.print("test1");
             printWriter.flush();
 
-            String userName = info.substring(info.length() - 8)
-            byte voteresult = voteForcar(userName)[0];
+            String userName = info.substring(info.length() - 6);
+            String voteresult = voteForcar(userName);
+            System.out.println(userName);
+            System.out.println(voteresult);
 
-            if (voteresult == 1) {
+            if (voteresult.equals("true")) {
                 System.out.println("你需要为新车服务");
                 // 申请身份
                 String newName = userName;
