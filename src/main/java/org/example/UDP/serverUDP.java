@@ -15,6 +15,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
 
@@ -195,18 +196,20 @@ public class serverUDP {
 
             // 收到新车请求，由该车负责调用其他车辆链码
             // 由链码返回1的认证车进行发送数据
-            String voteresult = voteForcar(userName);
-            if (voteresult.equals("true")) {
+//            String voteresult = voteForcar(userName);
 
-                // 获取数据，发送到白板车
-                byte[] msg = new String("ok,u are best").getBytes();
-                DatagramSocket client = new DatagramSocket();
-                InetAddress inetAddr = InetAddress.getLocalHost();
-                SocketAddress socketAddr = new InetSocketAddress(inetAddr, 9999);
-                DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, socketAddr);
-                client.send(sendPacket);
-                client.close();
-            }
+//            if (voteresult.equals("true")) {
+            userName = "user";
+            String content = new String(Files.readAllBytes(Paths.get("wallet/"+userName+".id")));//原文出自【易百教程】，商业转载请联系作者获得授权，非商业请保留原文链接：https://www.yiibai.com/java/java-read-file-to-string.html
+            // 获取数据，发送到白板车
+            byte[] msg = content.getBytes();
+            DatagramSocket client = new DatagramSocket();
+            InetAddress inetAddr = InetAddress.getLocalHost();
+            SocketAddress socketAddr = new InetSocketAddress(inetAddr, 9999);
+            DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, socketAddr);
+            client.send(sendPacket);
+            client.close();
+//            }
         }
 
     }
