@@ -29,11 +29,11 @@ public class blankCar {
     public static int main(String[] args) throws Exception {
         String host = "192.168.3.6";
 //        String host = "192.168.3.101";
-        String userName = "gibbon1430";
+        String userName = "gibbon07131949";
 
         try {
             //创建Socket对象
-            Socket socket=new Socket(host, 8888);
+            Socket socket=new Socket("192.168.2.255", 8888);
 
             //根据输入输出流和服务端连接
             OutputStream outputStream=socket.getOutputStream();//获取一个输出流，向服务端发送信息
@@ -44,7 +44,7 @@ public class blankCar {
             socket.shutdownOutput();//关闭输出流
 
             InputStream inputStream=socket.getInputStream();//获取一个输入流，接收服务端的信息
-            InputStreamReader inputStreamReader=new InputStreamReader(inputStream,"utf-8");//包装成字符流，提高效率
+            InputStreamReader inputStreamReader=new InputStreamReader(inputStream, "utf-8");//包装成字符流，提高效率
             BufferedReader bufferedReader=new BufferedReader(inputStreamReader);//缓冲区
             String info="";
             String temp=null;//临时变量

@@ -7,9 +7,6 @@ package org.example;
 import org.junit.Test;
 
 public class ClientTest {
-	public class GlobalClass {
-	}
-
 	@Test
 	public void testFabCar() throws Exception {
 //		EnrollAdmin.main(null);
@@ -18,14 +15,17 @@ public class ClientTest {
 
 //		FabricDemo.main(null);
 
-		if (true) {
-			if (blankCar.main(null) != 0) {
-//				caCar.main(null);
-			}
-		} else {
-			EnrollAdmin.main(null);
-			RegisterUser.main(null);
-			caCar.main(null);
-		}
+//		if (false) {
+//			if (blankCar.main(null) != 0) {
+////				caCar.main(null);
+//			}
+//		} else {
+//			EnrollAdmin.main(null);
+//			RegisterUser.main(null);
+//			caCar.main(null);
+//		}
+
+//		serverUDP.main(null);
+		clientUDP.main(null);
 	}
 }
