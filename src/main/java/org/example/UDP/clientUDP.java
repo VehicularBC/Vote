@@ -6,13 +6,18 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Arrays;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
 
 //客户端
 public class clientUDP {
     private static final int MAXREV = 255;
 
+
     public static void main(String[] args) throws IOException {
-        byte[] msg = new String("gibbon").getBytes();
+        String userName = "gibbon";
+        byte[] msg = userName.getBytes();
 
         InetAddress inetAddr = InetAddress.getByName("255.255.255.255");
         DatagramSocket client = new DatagramSocket();
@@ -44,6 +49,14 @@ public class clientUDP {
 
             System.out.println("Server Receive Data:" + new String(receiveMsg));
             server.send(recvPacket);
+
+            // 数据写入文件，结束服务器端
+            File f = new File(userName + ".id");
+            if (!f.exists()) { f.createNewFile(); }
+            FileWriter fw = new FileWriter(f.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(new String(receiveMsg));
+            bw.close();
         }
     }
 }

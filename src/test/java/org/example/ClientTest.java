@@ -25,7 +25,7 @@ public class ClientTest {
 //			caCar.main(null);
 //		}
 
-//		serverUDP.main(null);
-		clientUDP.main(null);
+		serverUDP.main(null);
+//		clientUDP.main(null);
 	}
 }
