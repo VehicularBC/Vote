@@ -13,6 +13,8 @@ import java.nio.file.Paths;
 import java.security.PrivateKey;
 import java.util.Properties;
 import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -57,6 +59,11 @@ public class serverUDP {
     private static final int MAXRECEIVED = 255;
     private String peerHostPort = "https://192.168.3.48:7054";
     private Socket socket;
+    public static void getNowDate(String action) {
+        Date date = new Date();
+        SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd :hh:mm:ss...");
+        System.out.println(dateFormat.format(date) + action);
+    }
 
     public void createNewUser(String userName) {
         try {
@@ -184,7 +191,7 @@ public class serverUDP {
         DatagramSocket server = new DatagramSocket(8888);
 
         System.out.println("---------------------------------");
-        System.out.println("Server current start......");
+        getNowDate(new String("Server current start......"));
         System.out.println("---------------------------------");
 
         while (true) {
@@ -192,14 +199,22 @@ public class serverUDP {
 
             byte[] recvByte = Arrays.copyOfRange(receive.getData(), 0, receive.getLength());
             String userName = new String(recvByte);
-            System.out.println("Server receive msg:" + new String(recvByte));
+//            System.out.println("Server receive msg:" + new String(recvByte));
+            getNowDate(new String("1.Server receive msg:" + new String(recvByte)));
 
             // 收到新车请求，由该车负责调用其他车辆链码
+            getNowDate(new String("2.1.invoking chaincode:" + voteresult);
             // 由链码返回1的认证车进行发送数据
             String voteresult = voteForcar(userName);
+            getNowDate(new String("2.2.received chaincode response:" + voteresult);
 
             if (voteresult.equals("true")) {
-//                userName = "user";
+                getNowDate(new String("3.1.beginging create identify");
+                createNewUser(userName);
+                getNowDate(new String("3.2.finishing creating identify");
+
+
+                getNowDate(new String("4.1.beginging to send identify");
                 String content = new String(Files.readAllBytes(Paths.get("wallet/"+userName+".id")));//原文出自【易百教程】，商业转载请联系作者获得授权，非商业请保留原文链接：https://www.yiibai.com/java/java-read-file-to-string.html
                 // 获取数据，发送到白板车
                 byte[] msg = content.getBytes();
@@ -209,6 +224,7 @@ public class serverUDP {
                 DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, socketAddr);
                 client.send(sendPacket);
                 client.close();
+                getNowDate(new String("4.2.finished sending identify");
             }
         }
 
