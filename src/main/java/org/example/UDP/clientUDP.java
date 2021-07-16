@@ -22,11 +22,10 @@ public class clientUDP {
     }
 
     public static void main(String[] args) throws IOException {
-        getNowDate(new String("1.1.broadcasting"));
-
         String userName = "gibbon";
-        byte[] msg = userName.getBytes();
 
+        getNowDate(new String("1.1.broadcasting"));
+        byte[] msg = userName.getBytes();
         InetAddress inetAddr = InetAddress.getByName("255.255.255.255");
         DatagramSocket client = new DatagramSocket();
 
@@ -43,7 +42,7 @@ public class clientUDP {
         DatagramPacket recvPacket = new DatagramPacket(new byte[MAXREV], MAXREV);
 
         System.out.println("---------------------------------");
-        System.out.println("new car is waiting......");
+        getNowDate(new String("new car is waiting......"))
         System.out.println("---------------------------------");
         while (true) {
             server.receive(recvPacket);
@@ -58,8 +57,8 @@ public class clientUDP {
 //                    + recvPacket.getAddress().getHostAddress());
             getNowDate(new String("Handing at client "
                     + recvPacket.getAddress().getHostName() + " ip "
-                    + recvPacket.getAddress().getHostAddress());
-            System.out.println("Server Receive Data:" + new String(receiveMsg));
+                    + recvPacket.getAddress().getHostAddress() +
+                    ", Server Receive Data:" + new String(receiveMsg));
             server.send(recvPacket);
 
 
