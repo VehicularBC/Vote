@@ -10,3 +10,10 @@
 参考链接：<br>
 1.套接字：https://blog.csdn.net/kangkangwanwan/article/details/78839822 <br>
 2.文件传输：https://zhuanlan.zhihu.com/p/79377902
+
+20210717:TCP转为UDP广播
+
+    测试结果：1.链码调用时间较长；2.UDP广播执行链码存在bug，导致交易提交被拒
+
+参考链接：<br>
+1.UDP套接字：https://blog.csdn.net/dabing69221/article/details/17286441
