@@ -17,16 +17,17 @@ public class clientUDP {
     private static final int MAXREV = 255;
     public static void getNowDate(String action) {
         Date date = new Date();
-        SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd :hh:mm:ss...");
+        SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd :hh:mm:ss!!!");
         System.out.println(dateFormat.format(date) + action);
     }
 
     public static void main(String[] args) throws IOException {
-        String userName = "gibbon";
+        String userName = "gibbon_3_07171035";
 
         getNowDate(new String("1.1.broadcasting"));
         byte[] msg = userName.getBytes();
-        InetAddress inetAddr = InetAddress.getByName("255.255.255.255");
+//        InetAddress inetAddr = InetAddress.getByName("255.255.255.255");
+        InetAddress inetAddr = InetAddress.getByName("192.168.3.51");
         DatagramSocket client = new DatagramSocket();
 
         DatagramPacket sendPack = new DatagramPacket(msg, msg.length, inetAddr, 8888);
@@ -42,7 +43,7 @@ public class clientUDP {
         DatagramPacket recvPacket = new DatagramPacket(new byte[MAXREV], MAXREV);
 
         System.out.println("---------------------------------");
-        getNowDate(new String("new car is waiting......"))
+        getNowDate(new String("new car is waiting......"));
         System.out.println("---------------------------------");
         while (true) {
             server.receive(recvPacket);
@@ -58,7 +59,7 @@ public class clientUDP {
             getNowDate(new String("Handing at client "
                     + recvPacket.getAddress().getHostName() + " ip "
                     + recvPacket.getAddress().getHostAddress() +
-                    ", Server Receive Data:" + new String(receiveMsg));
+                    ", Server Receive Data:" + new String(receiveMsg)));
             server.send(recvPacket);
 
 

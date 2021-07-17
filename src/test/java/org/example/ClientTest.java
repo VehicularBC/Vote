@@ -9,11 +9,16 @@ import org.junit.Test;
 public class ClientTest {
 	@Test
 	public void testFabCar() throws Exception {
+
+
 //		EnrollAdmin.main(null);
 //		RegisterUser.main(null);
 //		ClientApp.main(null);
 
+
 //		FabricDemo.main(null);
+
+
 
 //		if (false) {
 //			if (blankCar.main(null) != 0) {
@@ -25,6 +30,9 @@ public class ClientTest {
 //			caCar.main(null);
 //		}
 
+
+//		EnrollAdmin.main(null);
+//		RegisterUser.main(null);
 //		serverUDP.main(null);
 		clientUDP.main(null);
 	}
