@@ -1,25 +1,32 @@
 
 package org.example;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.Socket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.PrivateKey;
-import java.util.Properties;
-import java.util.Set;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import java.io.File;
 import java.nio.file.Files;
-import java.io.FileOutputStream;
-import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.PrivateKey;
+import java.util.Set;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Properties;
+import java.util.concurrent.TimeoutException;
+import java.text.SimpleDateFormat;
+import java.net.Socket;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 
 import org.hyperledger.fabric.gateway.Wallet;
 import org.hyperledger.fabric.gateway.Wallets;
@@ -33,26 +40,10 @@ import org.hyperledger.fabric.sdk.security.CryptoSuite;
 import org.hyperledger.fabric.sdk.security.CryptoSuiteFactory;
 import org.hyperledger.fabric_ca.sdk.HFCAClient;
 import org.hyperledger.fabric_ca.sdk.RegistrationRequest;
-
 import org.hyperledger.fabric.gateway.Contract;
 import org.hyperledger.fabric.gateway.Gateway;
 import org.hyperledger.fabric.gateway.Network;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeoutException;
 import org.hyperledger.fabric.gateway.ContractException;
-
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.util.Arrays;
-
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 
 //服务端
 public class serverUDP {
@@ -60,11 +51,7 @@ public class serverUDP {
     private static String peerHostPort = "https://192.168.96.7:7054";
     private static String localName = "gibbon_1";
     private Socket socket;
-    public static void getNowDate(String action) {
-        Date date = new Date();
-        SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd :hh:mm:ss!!!");
-        System.out.println(dateFormat.format(date) + action);
-    }
+
 
     public static void createNewUser(String userName) {
         try {
@@ -73,6 +60,7 @@ public class serverUDP {
             props.put("pemFile", "src/main/resources/crypto-config/" +
                     "peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem");
             props.put("allowAllHostNames", "true");
+
             HFCAClient caClient = HFCAClient.createNewInstance(peerHostPort, props);
             CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
             caClient.setCryptoSuite(cryptoSuite);
@@ -110,7 +98,7 @@ public class serverUDP {
 
                 @Override
                 public String getAffiliation() {
-                    return "org1.department1";
+                    return config.affiliation;
                 }
 
                 @Override
@@ -131,7 +119,7 @@ public class serverUDP {
 
                 @Override
                 public String getMspId() {
-                    return "Org1MSP";
+                    return config.MSPId;
                 }
 
             };
@@ -139,13 +127,13 @@ public class serverUDP {
             // Register the user, enroll the user, and import the new identity into the
             // wallet.
             RegistrationRequest registrationRequest = new RegistrationRequest(userName);
-            registrationRequest.setAffiliation("org1.department1");
+            registrationRequest.setAffiliation(config.affiliation);
             registrationRequest.setEnrollmentID(userName);
             String enrollmentSecret = caClient.register(registrationRequest, admin);
             Enrollment enrollment = caClient.enroll(userName, enrollmentSecret);
-            Identity user = Identities.newX509Identity("Org1MSP", enrollment);
+            Identity user = Identities.newX509Identity(config.MSPId, enrollment);
             wallet.put(userName, user);
-            System.out.println("Successfully enrolled user" + userName + "and imported it into the wallet");
+            System.out.println("Successfully enrolled user " + userName + "  and imported it into the wallet");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -172,10 +160,10 @@ public class serverUDP {
                 Network network = gateway.getNetwork("mychannel");
                 Contract contract = network.getContract("fabcar");
 
-                getNowDate(new String("3.1.1.waiting for voting"));
+                config.getNowDate(new String("3.1.1.waiting for voting"));
                 voteResult = contract.createTransaction("Vote").submit(carID);
 //                System.out.println(new String(voteResult, StandardCharsets.UTF_8));
-                getNowDate(new String("3.1.2.receiving for voting"));
+                config.getNowDate(new String("3.1.2.receiving for voting"));
 
             } catch (ContractException | TimeoutException | InterruptedException e) {
                 e.printStackTrace();
@@ -189,37 +177,41 @@ public class serverUDP {
     }
 
     public static void main(String[] args) throws IOException {
+        /* 1. 启动服务器 */
         DatagramPacket receive = new DatagramPacket(new byte[1024], 1024);
         DatagramSocket server = new DatagramSocket(8888);
 
         System.out.println("---------------------------------");
-        getNowDate(new String("Server current start......"));
+        config.getNowDate(new String("Server current start......"));
         System.out.println("---------------------------------");
 
         while (true) {
+            /* 2. 监听到客户端消息 */
             server.receive(receive);
 
             byte[] recvByte = Arrays.copyOfRange(receive.getData(), 0, receive.getLength());
-            String userName = new String(recvByte);
             String recIp = receive.getAddress().getHostAddress();
 //            System.out.println("Server receive msg:" + new String(recvByte));
-            getNowDate(new String("1.Server receive msg from user " + new String(recvByte)));
+            config.getNowDate(new String("1.Server receive msg:" + new String(recvByte)) +
+                    "(from user" + config.newUserName + ")");
 
+            /* 3. 调用链码 */
             try {
                 // 收到新车请求，由该车负责调用其他车辆链码
-                getNowDate(new String("2.1.invoking chaincode for " + userName));
-                // 由链码返回1的认证车进行发送数据
-                String voteresult = voteForcar(userName);
-                getNowDate(new String("2.2.received chaincode response " + voteresult + " for " + userName));
+                config.getNowDate(new String("2.1.invoking chaincode for " + config.newUserName));
+                String voteresult = voteForcar(config.newUserName);
+                config.getNowDate(new String("2.2.received chaincode response " + voteresult + " for " + config.newUserName));
 
+
+                /* 4. 身份传输 */
                 if (voteresult.equals("true")) {
-                    getNowDate(new String("3.1.beginging create identify for " + userName));
-                    createNewUser(userName);
-                    getNowDate(new String("3.2.finishing creating identify for " + userName));
+                    config.getNowDate(new String("3.1.beginging create identify for " + config.newUserName));
+                    createNewUser(config.newUserName);
+                    config.getNowDate(new String("3.2.finishing creating identify for " + config.newUserName));
 
 
-                    getNowDate(new String("4.1.beginging to send identify for " + userName));
-                    String content = new String(Files.readAllBytes(Paths.get("wallet/" + userName + ".id")));//原文出自【易百教程】，商业转载请联系作者获得授权，非商业请保留原文链接：https://www.yiibai.com/java/java-read-file-to-string.html
+                    config.getNowDate(new String("4.1.beginging to send identify for " + config.newUserName));
+                    String content = new String(Files.readAllBytes(Paths.get("wallet/" + config.newUserName + ".id")));//原文出自【易百教程】，商业转载请联系作者获得授权，非商业请保留原文链接：https://www.yiibai.com/java/java-read-file-to-string.html
                     // 获取数据，发送到白板车
                     byte[] msg = content.getBytes();
                     DatagramSocket client = new DatagramSocket();
@@ -228,11 +220,18 @@ public class serverUDP {
                     DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, socketAddr);
                     client.send(sendPacket);
                     client.close();
-                    getNowDate(new String("4.2.finished sending identify for " + userName));
+
+                    config.getNowDate(new String("4.2.finished sending identify for " + config.newUserName));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+
+            System.out.println("---------------------------------");
+            config.getNowDate("finish the interaction with user " + config.newUserName);
+            System.out.println("---------------------------------");
+
         }
 
     }
