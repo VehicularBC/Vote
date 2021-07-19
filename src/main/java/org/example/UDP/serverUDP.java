@@ -48,25 +48,32 @@ import org.hyperledger.fabric.gateway.ContractException;
 //服务端
 public class serverUDP {
     private static final int MAXRECEIVED = 255;
-    private static String peerHostPort = "https://192.168.96.7:7054";
-    private static String localName = "gibbon_1";
     private Socket socket;
 
+    private static String orgName = "org1.example.com";
+    private static String orgConnectionName = "connection-org1.yaml";
 
-    public static void createNewUser(String userName) {
+
+    private static Path walletPath = Paths.get("wallet");
+    private static Path networkConfigPath = Paths.get("src", "main", "resources", "crypto-config", "peerOrganizations", orgName, orgConnectionName);
+    private static Gateway.Builder builder = Gateway.createBuilder();
+    private static Wallet wallet = null;
+
+//    HFCAClient caClient = null;
+    public static void RegisterUser(String userName) {
         try {
             // Create a CA client for interacting with the CA.
             Properties props = new Properties();
             props.put("pemFile", "src/main/resources/crypto-config/" +
-                    "peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem");
+                    "peerOrganizations/" + config.pemDir);
             props.put("allowAllHostNames", "true");
 
-            HFCAClient caClient = HFCAClient.createNewInstance(peerHostPort, props);
+            HFCAClient caClient = HFCAClient.createNewInstance("https://" + config.peerHostIp + ":" + config.peerHostPort, props);
             CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
             caClient.setCryptoSuite(cryptoSuite);
 
             // Create a wallet for managing identities
-            Wallet wallet = Wallets.newFileSystemWallet(Paths.get("wallet"));
+            wallet = Wallets.newFileSystemWallet(Paths.get("wallet"));
 
             // Check to see if we've already enrolled the user.
             if (wallet.get(userName) != null) {
@@ -74,16 +81,16 @@ public class serverUDP {
                 return;
             }
 
-            X509Identity adminIdentity = (X509Identity) wallet.get("admin");
+            X509Identity adminIdentity = (X509Identity) wallet.get(config.adminName);
             if (adminIdentity == null) {
-                System.out.println("\"admin\" needs to be enrolled and added to the wallet first");
+                System.out.println(config.adminName + " needs to be enrolled and added to the wallet first");
                 return;
             }
             User admin = new User() {
 
                 @Override
                 public String getName() {
-                    return "admin";
+                    return config.adminName;
                 }
 
                 @Override
@@ -139,44 +146,49 @@ public class serverUDP {
         }
     }
 
-    public static String voteForcar(String carID) { //为新车进行投票，调用链码，返回一个byte类数组，第一个元素为链码返回结果（待测试）
+    public static String voteForcar(String carID) throws Exception { //为新车进行投票，调用链码，返回一个byte类数组，第一个元素为链码返回结果（待测试）
         byte[] voteResult = null;
-        try {
+//        try {
             // invoke the voting chaincode
             // Load a file system based wallet for managing identities.
-            Path walletPath = Paths.get("wallet");
-            Wallet wallet = Wallets.newFileSystemWallet(walletPath);
-            // load a CCP
-            Path networkConfigPath = Paths.get("src", "main", "resources", "crypto-config", "peerOrganizations",
-                    "org1.example.com", "connection-org1.yaml");
+//            Path walletPath = Paths.get("wallet");
+            wallet = Wallets.newFileSystemWallet(walletPath);
+//            // load a CCP
+//            Path networkConfigPath = Paths.get("src", "main", "resources", "crypto-config", "peerOrganizations",
+//                    orgName, orgConnectionName);
+//
+//            Gateway.Builder builder = Gateway.createBuilder();
 
-            Gateway.Builder builder = Gateway.createBuilder();
-
-            builder.identity(wallet, localName).networkConfig(networkConfigPath).discovery(true);
+            builder.identity(wallet, config.localUserName).networkConfig(networkConfigPath).discovery(true);
 
             // create a gateway connection
             try (Gateway gateway = builder.connect()) {
+
                 // get the network and contract
                 Network network = gateway.getNetwork("mychannel");
                 Contract contract = network.getContract("fabcar");
 
-                config.getNowDate(new String("3.1.1.waiting for voting"));
+                config.getNowDate(new String("2.1.1.waiting for voting"));
                 voteResult = contract.createTransaction("Vote").submit(carID);
-//                System.out.println(new String(voteResult, StandardCharsets.UTF_8));
-                config.getNowDate(new String("3.1.2.receiving for voting"));
+                config.getNowDate(new String("2.1.2.receiving for voting"));
+                return new String(voteResult, StandardCharsets.UTF_8);
 
             } catch (ContractException | TimeoutException | InterruptedException e) {
+                config.getNowDate(new String());
                 e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            config.getNowDate(new String());
+//        } catch (Exception e) {
+//            config.getNowDate(new String());
+//            e.printStackTrace();
+//        }
+        config.getNowDate(new String());
         String aaa = new String(voteResult, StandardCharsets.UTF_8);
 //        System.out.println(aaa);
-        return aaa;
+        return "false";
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         /* 1. 启动服务器 */
         DatagramPacket receive = new DatagramPacket(new byte[1024], 1024);
         DatagramSocket server = new DatagramSocket(8888);
@@ -192,26 +204,26 @@ public class serverUDP {
             byte[] recvByte = Arrays.copyOfRange(receive.getData(), 0, receive.getLength());
             String recIp = receive.getAddress().getHostAddress();
 //            System.out.println("Server receive msg:" + new String(recvByte));
-            config.getNowDate(new String("1.Server receive msg:" + new String(recvByte)) +
-                    "(from user" + config.newUserName + ")");
+            String newUserName = new String(recvByte);
+            config.getNowDate(new String("1.Server receive msg:" + new String(recvByte)));
 
             /* 3. 调用链码 */
             try {
                 // 收到新车请求，由该车负责调用其他车辆链码
-                config.getNowDate(new String("2.1.invoking chaincode for " + config.newUserName));
-                String voteresult = voteForcar(config.newUserName);
-                config.getNowDate(new String("2.2.received chaincode response " + voteresult + " for " + config.newUserName));
+                config.getNowDate(new String("2.1.invoking chaincode for " + newUserName));
+                String voteresult = voteForcar(newUserName);
+                config.getNowDate(new String("2.2.received chaincode response " + voteresult + " for " + newUserName));
 
 
                 /* 4. 身份传输 */
                 if (voteresult.equals("true")) {
-                    config.getNowDate(new String("3.1.beginging create identify for " + config.newUserName));
-                    createNewUser(config.newUserName);
-                    config.getNowDate(new String("3.2.finishing creating identify for " + config.newUserName));
+                    config.getNowDate(new String("3.1.beginging create identify for " + newUserName));
+                    RegisterUser(newUserName);
+                    config.getNowDate(new String("3.2.finishing creating identify for " + newUserName));
 
 
-                    config.getNowDate(new String("4.1.beginging to send identify for " + config.newUserName));
-                    String content = new String(Files.readAllBytes(Paths.get("wallet/" + config.newUserName + ".id")));//原文出自【易百教程】，商业转载请联系作者获得授权，非商业请保留原文链接：https://www.yiibai.com/java/java-read-file-to-string.html
+                    config.getNowDate(new String("4.1.beginging to send identify for " + newUserName));
+                    String content = new String(Files.readAllBytes(Paths.get("wallet/" + newUserName + ".id")));//原文出自【易百教程】，商业转载请联系作者获得授权，非商业请保留原文链接：https://www.yiibai.com/java/java-read-file-to-string.html
                     // 获取数据，发送到白板车
                     byte[] msg = content.getBytes();
                     DatagramSocket client = new DatagramSocket();
@@ -221,16 +233,16 @@ public class serverUDP {
                     client.send(sendPacket);
                     client.close();
 
-                    config.getNowDate(new String("4.2.finished sending identify for " + config.newUserName));
+                    config.getNowDate(new String("4.2.finished sending identify for " + newUserName));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
 
-            System.out.println("---------------------------------");
-            config.getNowDate("finish the interaction with user " + config.newUserName);
-            System.out.println("---------------------------------");
+            System.out.println("-----------------------------------------------------------");
+            config.getNowDate("finish the interaction with user " + newUserName);
+            System.out.println("-----------------------------------------------------------");
 
         }
 

@@ -27,14 +27,12 @@ public class RegisterUser {
 //		System.setProperty("org.hyperledger.fabric.sdk.service_discovery.as_localhost", "true");
 //	}
 
-	public static void main(String[] args) throws Exception {
-		String userName = "gibbon";
-
+	public static void main(String[] args) throws Exception  {
 		// Create a CA client for interacting with the CA.
 		Properties props = new Properties();
-		props.put("pemFile", "src/main/resources/crypto-config/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem");
+		props.put("pemFile", "src/main/resources/crypto-config/peerOrganizations/" + config.pemDir);
 		props.put("allowAllHostNames", "true");
-		HFCAClient caClient = HFCAClient.createNewInstance("https://192.168.96.7:7054", props);
+		HFCAClient caClient = HFCAClient.createNewInstance("https://" + config.peerHostIp + ":" + config.peerHostPort, props);
 		CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
 		caClient.setCryptoSuite(cryptoSuite);
 
@@ -42,21 +40,21 @@ public class RegisterUser {
 		Wallet wallet = Wallets.newFileSystemWallet(Paths.get("wallet"));
 
 		// Check to see if we've already enrolled the user.
-		if (wallet.get(userName) != null) {
-			System.out.println("An identity for the user " + userName + " already exists in the wallet");
+		if (wallet.get(config.localUserName) != null) {
+			System.out.println("An identity for the user " + config.localUserName + " already exists in the wallet");
 			return;
 		}
 
-		X509Identity adminIdentity = (X509Identity)wallet.get("admin");
+		X509Identity adminIdentity = (X509Identity) wallet.get(config.adminName);
 		if (adminIdentity == null) {
-			System.out.println("\"admin\" needs to be enrolled and added to the wallet first");
+			System.out.println(config.adminName + " needs to be enrolled and added to the wallet first");
 			return;
 		}
 		User admin = new User() {
 
 			@Override
 			public String getName() {
-				return "admin";
+				return config.adminName;
 			}
 
 			@Override
@@ -71,7 +69,7 @@ public class RegisterUser {
 
 			@Override
 			public String getAffiliation() {
-				return "org1.department1";
+				return config.affiliation;
 			}
 
 			@Override
@@ -92,20 +90,19 @@ public class RegisterUser {
 
 			@Override
 			public String getMspId() {
-				return "Org1MSP";
+				return config.MSPId;
 			}
 
 		};
 
 		// Register the user, enroll the user, and import the new identity into the wallet.
-		RegistrationRequest registrationRequest = new RegistrationRequest(userName);
-		registrationRequest.setAffiliation("org1.department1");
-		registrationRequest.setEnrollmentID(userName);
+		RegistrationRequest registrationRequest = new RegistrationRequest(config.localUserName);
+		registrationRequest.setAffiliation(config.affiliation);
+		registrationRequest.setEnrollmentID(config.localUserName);
 		String enrollmentSecret = caClient.register(registrationRequest, admin);
-		Enrollment enrollment = caClient.enroll(userName, enrollmentSecret);
-		Identity user = Identities.newX509Identity("Org1MSP", enrollment);
-		wallet.put(userName, user);
-		System.out.println("Successfully enrolled user " + userName + " and imported it into the wallet");
+		Enrollment enrollment = caClient.enroll(config.localUserName, enrollmentSecret);
+		Identity user = Identities.newX509Identity(config.MSPId, enrollment);
+		wallet.put(config.localUserName, user);
+		System.out.println("Successfully enrolled user " + config.localUserName + " and imported it into the wallet");
 	}
-
 }

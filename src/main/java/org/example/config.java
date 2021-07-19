@@ -7,18 +7,24 @@ import java.text.SimpleDateFormat;
 
 public class config {
 
-    public static String peerHostPort = "192.168.96.7:7054";
+    public static String peerHostIp = "192.168.2.83";
+    public static String peerHostPort = "7054";
     public static String MSPId = "Org1MSP";
     public static String orgNumber = "org1.example.com";
 
     public static String adminName = "admin";
-    public static String localUserName = "gibbon_1";
+    public static String adminPasswd = "adminpw";
+//    public static String localUserName = "gibbon_1";
+    public static String localUserName = "user";
     public static String affiliation = "org1.department1";
+    public static String pemDir = "org1.example.com/ca/ca.org1.example.com-cert.pem";
+
+
     public static String channelName = "mychannel";
     public static String contractName = "fabcar";
     public static String contractFuncName = "Vote";
 
-    public static String newUserName = "gibbon_3_07181934";
+    public static String newUserName = "gibbon_33_07191457";
 
 
     public static void getNowDate(String action) {
