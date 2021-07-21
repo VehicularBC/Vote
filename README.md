@@ -17,3 +17,6 @@
 
 参考链接：<br>
 1.UDP套接字：https://blog.csdn.net/dabing69221/article/details/17286441
+2.contract包：https://github.com/hyperledger/fabric-gateway-java/blob/26c69ebc3ca5f23d0a8ee5efa9ffbd962a78f54b/src/main/java/org/hyperledger/fabric/gateway/Gateway.java
+
+20210721:整理程序逻辑，将参数初始化封装为一函数，目前"收到信息注册并返回"的时延为0.3s

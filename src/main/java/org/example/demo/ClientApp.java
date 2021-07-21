@@ -34,10 +34,9 @@ public class ClientApp {
 //
 //		Gateway.Builder builder = Gateway.createBuilder();
 
-		builder.identity(wallet, "user").networkConfig(networkConfigPath).discovery(true);
+		builder.identity(wallet, config.localUserName).networkConfig(networkConfigPath).discovery(true);
 
 		// create a gateway connection
-		config.getNowDate(new String(""));
 		try {
 			gateway = builder.connect();
 			// get the network and contract
@@ -47,6 +46,7 @@ public class ClientApp {
 			byte[] result;
 //			config.getNowDate(new String(result));
 
+			config.getNowDate(new String("begining"));
 			if (false) {
 				result = contract.createTransaction("Vote").submit("carID1");
 				config.getNowDate(new String(result));
@@ -54,21 +54,23 @@ public class ClientApp {
 				result = contract.evaluateTransaction("queryAllCars");
 				config.getNowDate(new String(result));
 
-				contract.submitTransaction("createCar", "CAR10", "VW", "Polo", "Grey", "Mary");
+				result = contract.submitTransaction("createCar", "CAR10", "VW", "Polo", "Grey", "Mary");
+				config.getNowDate(new String("creating car"));
 
 				result = contract.evaluateTransaction("queryCar", "CAR10");
 				config.getNowDate(new String(result));
 
 				contract.submitTransaction("changeCarOwner", "CAR10", "Archie");
+				config.getNowDate(new String("changing car owner"));
 
 				result = contract.evaluateTransaction("queryCar", "CAR10");
 				config.getNowDate(new String(result));
 			}
-			gateway.close();  // 耗时9s
+//			gateway.close();  // 耗时9s
 		} catch (Exception e) {
             config.getNowDate(new String());
             e.printStackTrace();
         }
-		config.getNowDate(new String(""));
+		config.getNowDate(new String("ending"));
 	}
 }

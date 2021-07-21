@@ -14,8 +14,8 @@ public class config {
 
     public static String adminName = "admin";
     public static String adminPasswd = "adminpw";
-//    public static String localUserName = "gibbon_1";
-    public static String localUserName = "user";
+    public static String localUserName = "gibbon_1";
+//    public static String localUserName = "user";
     public static String affiliation = "org1.department1";
     public static String pemDir = "org1.example.com/ca/ca.org1.example.com-cert.pem";
 
@@ -24,13 +24,12 @@ public class config {
     public static String contractName = "fabcar";
     public static String contractFuncName = "Vote";
 
-    public static String newUserName = "gibbon_33_07191457";
+    public static String newUserName = "gibbon_11_07211627";
 
 
     public static void getNowDate(String action) {
-
         Date date = new Date();
-        SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd :hh:mm:ss!!!");
+        SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd :hh:mm:ss:SSS!!!");
         System.out.println(dateFormat.format(date) + action);
     }
 }

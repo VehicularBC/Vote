@@ -54,93 +54,36 @@ public class serverUDP {
     private static String orgConnectionName = "connection-org1.yaml";
 
 
-    private static Path walletPath = Paths.get("wallet");
-    private static Path networkConfigPath = Paths.get("src", "main", "resources", "crypto-config", "peerOrganizations", orgName, orgConnectionName);
-    private static Gateway.Builder builder = Gateway.createBuilder();
     private static Wallet wallet = null;
+    private static X509Identity adminIdentity = null;
+    private static User admin = null;
+    private static HFCAClient caClient = null;
+    private static CryptoSuite cryptoSuite = null;
+
+    private static Gateway.Builder builder = null;
+    private static Gateway gateway = null;
+    private static Network network = null;
+    private static Contract contract = null;
 
 //    HFCAClient caClient = null;
     public static void RegisterUser(String userName) {
         try {
-            // Create a CA client for interacting with the CA.
-            Properties props = new Properties();
-            props.put("pemFile", "src/main/resources/crypto-config/" +
-                    "peerOrganizations/" + config.pemDir);
-            props.put("allowAllHostNames", "true");
-
-            HFCAClient caClient = HFCAClient.createNewInstance("https://" + config.peerHostIp + ":" + config.peerHostPort, props);
-            CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
-            caClient.setCryptoSuite(cryptoSuite);
-
-            // Create a wallet for managing identities
-            wallet = Wallets.newFileSystemWallet(Paths.get("wallet"));
-
             // Check to see if we've already enrolled the user.
             if (wallet.get(userName) != null) {
                 System.out.println("An identity for the user " + userName + " already exists in the wallet");
                 return;
             }
 
-            X509Identity adminIdentity = (X509Identity) wallet.get(config.adminName);
-            if (adminIdentity == null) {
-                System.out.println(config.adminName + " needs to be enrolled and added to the wallet first");
-                return;
-            }
-            User admin = new User() {
-
-                @Override
-                public String getName() {
-                    return config.adminName;
-                }
-
-                @Override
-                public Set<String> getRoles() {
-                    return null;
-                }
-
-                @Override
-                public String getAccount() {
-                    return null;
-                }
-
-                @Override
-                public String getAffiliation() {
-                    return config.affiliation;
-                }
-
-                @Override
-                public Enrollment getEnrollment() {
-                    return new Enrollment() {
-
-                        @Override
-                        public PrivateKey getKey() {
-                            return adminIdentity.getPrivateKey();
-                        }
-
-                        @Override
-                        public String getCert() {
-                            return Identities.toPemString(adminIdentity.getCertificate());
-                        }
-                    };
-                }
-
-                @Override
-                public String getMspId() {
-                    return config.MSPId;
-                }
-
-            };
-
-            // Register the user, enroll the user, and import the new identity into the
-            // wallet.
+            // Register the user, enroll the user, and import the new identity into the wallet.
             RegistrationRequest registrationRequest = new RegistrationRequest(userName);
             registrationRequest.setAffiliation(config.affiliation);
             registrationRequest.setEnrollmentID(userName);
+
             String enrollmentSecret = caClient.register(registrationRequest, admin);
             Enrollment enrollment = caClient.enroll(userName, enrollmentSecret);
+
             Identity user = Identities.newX509Identity(config.MSPId, enrollment);
             wallet.put(userName, user);
-            System.out.println("Successfully enrolled user " + userName + "  and imported it into the wallet");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -148,47 +91,106 @@ public class serverUDP {
 
     public static String voteForcar(String carID) throws Exception { //为新车进行投票，调用链码，返回一个byte类数组，第一个元素为链码返回结果（待测试）
         byte[] voteResult = null;
-//        try {
-            // invoke the voting chaincode
-            // Load a file system based wallet for managing identities.
-//            Path walletPath = Paths.get("wallet");
-            wallet = Wallets.newFileSystemWallet(walletPath);
-//            // load a CCP
-//            Path networkConfigPath = Paths.get("src", "main", "resources", "crypto-config", "peerOrganizations",
-//                    orgName, orgConnectionName);
-//
-//            Gateway.Builder builder = Gateway.createBuilder();
 
-            builder.identity(wallet, config.localUserName).networkConfig(networkConfigPath).discovery(true);
-
-            // create a gateway connection
-            try (Gateway gateway = builder.connect()) {
-
-                // get the network and contract
-                Network network = gateway.getNetwork("mychannel");
-                Contract contract = network.getContract("fabcar");
-
-                config.getNowDate(new String("2.1.1.waiting for voting"));
-                voteResult = contract.createTransaction("Vote").submit(carID);
-                config.getNowDate(new String("2.1.2.receiving for voting"));
-                return new String(voteResult, StandardCharsets.UTF_8);
-
-            } catch (ContractException | TimeoutException | InterruptedException e) {
-                config.getNowDate(new String());
-                e.printStackTrace();
-            }
-            config.getNowDate(new String());
-//        } catch (Exception e) {
+        // create a gateway connection
+        try {
+            config.getNowDate(new String("2.1.1.waiting for voting"));
+            voteResult = contract.createTransaction("Vote").submit(carID);
+            config.getNowDate(new String("2.1.2.receiving for voting"));
+        } catch (ContractException | TimeoutException | InterruptedException e) {
 //            config.getNowDate(new String());
-//            e.printStackTrace();
-//        }
-        config.getNowDate(new String());
-        String aaa = new String(voteResult, StandardCharsets.UTF_8);
-//        System.out.println(aaa);
-        return "false";
+            e.printStackTrace();
+        }
+        return new String(voteResult, StandardCharsets.UTF_8);
+    }
+
+    private static void InitParam() throws Exception  {
+        Path networkConfigPath = Paths.get("src", "main", "resources", "crypto-config", "peerOrganizations", orgName, orgConnectionName);
+
+        // Create a wallet for managing identities
+        Path walletPath = Paths.get("wallet");
+        wallet = Wallets.newFileSystemWallet(walletPath);
+
+        cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
+
+        /* 注册
+        * HFCAclient、
+        * */
+        // Create a CA client for interacting with the CA.
+        Properties props = new Properties();
+        props.put("pemFile", "src/main/resources/crypto-config/" + "peerOrganizations/" + config.pemDir);
+        props.put("allowAllHostNames", "true");
+
+        caClient = HFCAClient.createNewInstance("https://" + config.peerHostIp + ":" + config.peerHostPort, props);
+        caClient.setCryptoSuite(cryptoSuite);
+
+
+        adminIdentity = (X509Identity) wallet.get(config.adminName);
+        if (adminIdentity == null) {
+            System.out.println(config.adminName + " needs to be enrolled and added to the wallet first");
+            return;
+        }
+        admin = new User() {
+
+            @Override
+            public String getName() {
+                return config.adminName;
+            }
+
+            @Override
+            public Set<String> getRoles() {
+                return null;
+            }
+
+            @Override
+            public String getAccount() {
+                return null;
+            }
+
+            @Override
+            public String getAffiliation() {
+                return config.affiliation;
+            }
+
+            @Override
+            public Enrollment getEnrollment() {
+                return new Enrollment() {
+
+                    @Override
+                    public PrivateKey getKey() {
+                        return adminIdentity.getPrivateKey();
+                    }
+
+                    @Override
+                    public String getCert() {
+                        return Identities.toPemString(adminIdentity.getCertificate());
+                    }
+                };
+            }
+
+            @Override
+            public String getMspId() {
+                return config.MSPId;
+            }
+
+        };
+
+        /* 调用SDK
+        * builder、gateway、network、contract
+        * */
+        // 基于本地用户和配置文件
+        builder = Gateway.createBuilder();
+        builder.identity(wallet, config.localUserName).networkConfig(networkConfigPath).discovery(true);
+
+        // get the network and contract
+        gateway = builder.connect();
+        network = gateway.getNetwork(config.channelName);  // mychannel
+        contract = network.getContract(config.contractName);  // fabcar
     }
 
     public static void main(String[] args) throws Exception {
+        InitParam();  // 初始化系统参数
+
         /* 1. 启动服务器 */
         DatagramPacket receive = new DatagramPacket(new byte[1024], 1024);
         DatagramSocket server = new DatagramSocket(8888);
@@ -203,17 +205,18 @@ public class serverUDP {
 
             byte[] recvByte = Arrays.copyOfRange(receive.getData(), 0, receive.getLength());
             String recIp = receive.getAddress().getHostAddress();
-//            System.out.println("Server receive msg:" + new String(recvByte));
             String newUserName = new String(recvByte);
             config.getNowDate(new String("1.Server receive msg:" + new String(recvByte)));
 
             /* 3. 调用链码 */
             try {
-                // 收到新车请求，由该车负责调用其他车辆链码
-                config.getNowDate(new String("2.1.invoking chaincode for " + newUserName));
-                String voteresult = voteForcar(newUserName);
-                config.getNowDate(new String("2.2.received chaincode response " + voteresult + " for " + newUserName));
-
+                String voteresult = "true";
+                if (false) {  // 20210721:暂不考虑投票机制
+                    // 收到新车请求，由该车负责调用其他车辆链码
+                    config.getNowDate(new String("2.1.invoking chaincode for " + newUserName));
+                    voteresult = voteForcar(newUserName);
+                    config.getNowDate(new String("2.2.received chaincode response " + voteresult + " for " + newUserName));
+                }
 
                 /* 4. 身份传输 */
                 if (voteresult.equals("true")) {
@@ -235,7 +238,7 @@ public class serverUDP {
 
                     config.getNowDate(new String("4.2.finished sending identify for " + newUserName));
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 

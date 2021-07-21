@@ -20,17 +20,16 @@ public class clientUDP {
         /* 1. 广播 */
         config.getNowDate(new String("1.1.broadcasting"));
         byte[] msg = config.newUserName.getBytes();
-        InetAddress inetAddr = InetAddress.getByName("255.255.255.255");
-//        InetAddress inetAddr = InetAddress.getByName("192.168.2.5");
+//        InetAddress inetAddr = InetAddress.getByName("255.255.255.255");
+        InetAddress inetAddr = InetAddress.getByName("192.168.2.5");
 //        InetAddress inetAddr = InetAddress.getByName("192.168.2.75");
         DatagramSocket client = new DatagramSocket();
 
         DatagramPacket sendPack = new DatagramPacket(msg, msg.length, inetAddr, 8888);
 
         client.send(sendPack);
-        System.out.println("Client send msg complete");
         client.close();
-        config.getNowDate(new String("1.2.finishing broadcasting"));
+        config.getNowDate(new String("1.2.finishing client broadcasting"));
 
 
         /* 2. 开启服务器，等待接收信息 */
