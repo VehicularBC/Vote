@@ -20,8 +20,8 @@ public class clientPlanB {
 
     public static void main(String[] args) throws IOException {
         /* 8888发信息：广播和单播
-        * 9999接受广播回复
-        * 10999接受单播回复 */
+         * 9999接受广播回复
+         * 10999接受单播回复 */
 
         DatagramSocket serverForBroad = new DatagramSocket(9999);
         DatagramSocket serverForId = new DatagramSocket(10999);
@@ -33,7 +33,7 @@ public class clientPlanB {
 
         byte[] msg = new String("1" + config.newUserName).getBytes();
 
-        
+
         DatagramSocket client = new DatagramSocket();
         DatagramPacket sendPack = new DatagramPacket(msg, msg.length, inetAddrForBroad, 8888);
 

@@ -3,12 +3,25 @@ package org.example;
 
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
+import javax.crypto.Cipher;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class config {
 
-    public static String peerHostIp = "192.168.3.162";
-    public static String peerHostPort = "7054";
+    public static String peerHostIp = "192.168.96.7";
+    public static String peerHostPort = "7054";  // 默认如此
     public static String MSPId = "Org1MSP";
     public static String orgNumber = "org1.example.com";
 
@@ -25,6 +38,9 @@ public class config {
     public static String contractFuncName = "Vote";
 
     public static String newUserName = "test202108061636";
+
+    public static int reputation = 1;
+    public static Map<Integer, String> keyMap = new HashMap<Integer, String>();
 
 
     public static void getNowDate(String action) {

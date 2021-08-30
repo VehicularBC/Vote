@@ -38,12 +38,24 @@ public class ClientTest {
 //			clientUDP.main(null);
 //		}
 
-		if (false) {
+		/* plan B */
+//		if (true) {
+//			EnrollAdmin.main(null);
+//			RegisterUser.main(null);
+//			serverPlanB.main(null);
+//		} else {
+//			clientPlanB.main(null);
+//		}
+
+
+		/* plan C */
+		RSAUtils.genKeyPair();  // 生成公钥和私钥
+		if (true) {
 			EnrollAdmin.main(null);
 			RegisterUser.main(null);
-			serverPlanB.main(null);
+			serverPlanC.main(null);
 		} else {
-			clientPlanB.main(null);
+			clientPlanC.main(null);
 		}
 	}
 }

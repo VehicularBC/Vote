@@ -26,7 +26,6 @@ public class EnrollAdmin {
 //	}
 
 	public static void main(String[] args) throws Exception {
-
 		// Create a CA client for interacting with the CA.
 		Properties props = new Properties();
 		props.put("pemFile", "src/main/resources/crypto-config/" +
