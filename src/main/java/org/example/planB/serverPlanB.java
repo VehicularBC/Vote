@@ -1,4 +1,3 @@
-
 package org.example;
 
 import java.io.File;
@@ -44,9 +43,21 @@ import org.hyperledger.fabric.gateway.Contract;
 import org.hyperledger.fabric.gateway.Gateway;
 import org.hyperledger.fabric.gateway.Network;
 import org.hyperledger.fabric.gateway.ContractException;
+import org.hyperledger.fabric_ca.sdk.Attribute;
+import org.hyperledger.fabric_ca.sdk.EnrollmentRequest;
+import org.hyperledger.fabric.gateway.Wallet;
+//import org.hyperledger.fabric.gateway.Wallet.Identity;
+import org.hyperledger.fabric.sdk.Enrollment;
+import org.hyperledger.fabric.sdk.User;
+import org.hyperledger.fabric.sdk.security.CryptoSuite;
+import org.hyperledger.fabric.sdk.security.CryptoSuiteFactory;
+import org.hyperledger.fabric_ca.sdk.HFCAClient;
+import org.hyperledger.fabric_ca.sdk.RegistrationRequest;
+import org.hyperledger.fabric_ca.sdk.EnrollmentRequest;
+import org.hyperledger.fabric_ca.sdk.Attribute;
 
 //服务端
-public class serverUDP {
+public class serverPlanB {
     private static final int MAXRECEIVED = 255;
     private Socket socket;
 
@@ -65,24 +76,37 @@ public class serverUDP {
     private static Network network = null;
     private static Contract contract = null;
 
-//    HFCAClient caClient = null;
+    //    HFCAClient caClient = null;
     public static void RegisterUser(String userName) {
         try {
             // Check to see if we've already enrolled the user.
-            if (wallet.get(userName) != null) {
-                System.out.println("An identity for the user " + userName + " already exists in the wallet");
-                return;
-            }
+//            if (wallet.get(userName) != null) {
+//                System.out.println("An identity for the user " + userName + " already exists in the wallet");
+//                return;
+//            }
 
             // Register the user, enroll the user, and import the new identity into the wallet.
             RegistrationRequest registrationRequest = new RegistrationRequest(userName);
             registrationRequest.setAffiliation(config.affiliation);
             registrationRequest.setEnrollmentID(userName);
 
+            // register的时候在registrationRequest中增加自定义属性
+            registrationRequest.addAttribute(new Attribute("attr1", userName));	//user-defined attributes
+
             String enrollmentSecret = caClient.register(registrationRequest, admin);
-            Enrollment enrollment = caClient.enroll(userName, enrollmentSecret);
+
+            //定义一个enrollmentRequest，在里面设置需要加入到证书中的属性
+            //不设置的话，只把默认的hf.Affiliation, hf.EnrollmentID, hf.Type加入到证书中
+            EnrollmentRequest enrollmentRequest = new EnrollmentRequest();
+            enrollmentRequest.addAttrReq("hf.Affiliation");		//default attribute
+            enrollmentRequest.addAttrReq("hf.EnrollmentID");	//default attribute
+            enrollmentRequest.addAttrReq("hf.Type");			//default attribute
+            enrollmentRequest.addAttrReq("attr1");				//user-defined attribute
+
+            Enrollment enrollment = caClient.enroll(userName, enrollmentSecret, enrollmentRequest);
 
             Identity user = Identities.newX509Identity(config.MSPId, enrollment);
+//            Identity user = Identity.createIdentity(config.MSPId, enrollment.getCert(), enrollment.getKey());
             wallet.put(userName, user);
         } catch (Exception e) {
             e.printStackTrace();
@@ -119,8 +143,8 @@ public class serverUDP {
         cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
 
         /* 注册
-        * HFCAclient、
-        * */
+         * HFCAclient、
+         * */
         // Create a CA client for interacting with the CA.
         Properties props = new Properties();
         props.put("pemFile", "src/main/resources/crypto-config/" + "peerOrganizations/" + config.pemDir);
@@ -181,8 +205,8 @@ public class serverUDP {
         };
 
         /* 调用SDK
-        * builder、gateway、network、contract
-        * */
+         * builder、gateway、network、contract
+         * */
         // 基于本地用户和配置文件
         builder = Gateway.createBuilder();
         builder.identity(wallet, config.localUserName).networkConfig(networkConfigPath).discovery(true);
@@ -200,9 +224,9 @@ public class serverUDP {
         DatagramPacket receive = new DatagramPacket(new byte[1024], 1024);
         DatagramSocket server = new DatagramSocket(8888);
 
-        System.out.println("---------------------------------");
+        System.out.println("-----------------------------------------------------------");
         config.getNowDate(new String("Server current start......"));
-        System.out.println("---------------------------------");
+        System.out.println("-----------------------------------------------------------");
 
         while (true) {
             /* 2. 监听到客户端消息 */
@@ -213,40 +237,38 @@ public class serverUDP {
             String newUserName = new String(recvByte);
             config.getNowDate(new String("1.Server receive msg:" + new String(recvByte)));
 
-            /* 3. 调用链码 */
             try {
-                String voteresult = "true";
-                if (true) {  // 20210721:暂不考虑投票机制
-                    // 收到新车请求，由该车负责调用其他车辆链码
-                    config.getNowDate(new String("2.1.invoking chaincode for " + newUserName));
-                    voteresult = voteForcar(newUserName);
-                    config.getNowDate(new String("2.2.received chaincode response " + voteresult + " for " + newUserName));
-                }
-
-                /* 4. 身份传输 */
-                if (voteresult.equals("true")) {
-                    config.getNowDate(new String("3.1.beginging create identify for " + newUserName));
-                    RegisterUser(newUserName);
-                    config.getNowDate(new String("3.2.finishing creating identify for " + newUserName));
-
-
-                    config.getNowDate(new String("4.1.beginging to send identify for " + newUserName));
-                    String content = new String(Files.readAllBytes(Paths.get("wallet/" + newUserName + ".id")));//原文出自【易百教程】，商业转载请联系作者获得授权，非商业请保留原文链接：https://www.yiibai.com/java/java-read-file-to-string.html
-                    // 获取数据，发送到白板车
-                    byte[] msg = content.getBytes();
+                config.getNowDate(newUserName);
+                /* 接收到入网信息和接收到创建.id信息 */
+                if(newUserName.startsWith("1")) {
+                    // 返回自身UID
+                    byte[] msg = config.localUserName.getBytes();
                     DatagramSocket client = new DatagramSocket();
                     InetAddress inetAddr = InetAddress.getByName(recIp);
+                    config.getNowDate(recIp);
                     SocketAddress socketAddr = new InetSocketAddress(inetAddr, 9999);
                     DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, socketAddr);
                     client.send(sendPacket);
                     client.close();
+                } else if (newUserName.startsWith("2")) {
+                    // 获取数据，发送到白板车
+                    config.getNowDate("register begin!!!");
+                    RegisterUser(newUserName);
+                    config.getNowDate("register finish, then send id file!!!");
 
-                    config.getNowDate(new String("4.2.finished sending identify for " + newUserName));
+                    String content = new String(Files.readAllBytes(Paths.get("wallet/" + newUserName + ".id")));
+                    // 获取数据，发送到白板车
+                    byte[] msg = content.getBytes();
+                    DatagramSocket client = new DatagramSocket();
+                    InetAddress inetAddr = InetAddress.getByName(recIp);
+                    SocketAddress socketAddr = new InetSocketAddress(inetAddr, 10999);
+                    DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, socketAddr);
+                    client.send(sendPacket);
+                    client.close();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
 
             System.out.println("-----------------------------------------------------------");
             config.getNowDate("finish the interaction with user " + newUserName);

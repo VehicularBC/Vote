@@ -4,6 +4,9 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.example;
 
+
+
+
 import java.nio.file.Paths;
 import java.security.PrivateKey;
 import java.util.Properties;
@@ -20,6 +23,8 @@ import org.hyperledger.fabric.sdk.security.CryptoSuite;
 import org.hyperledger.fabric.sdk.security.CryptoSuiteFactory;
 import org.hyperledger.fabric_ca.sdk.HFCAClient;
 import org.hyperledger.fabric_ca.sdk.RegistrationRequest;
+import org.hyperledger.fabric_ca.sdk.Attribute;
+import org.hyperledger.fabric_ca.sdk.EnrollmentRequest;
 
 public class RegisterUser {
 
@@ -99,8 +104,18 @@ public class RegisterUser {
 		RegistrationRequest registrationRequest = new RegistrationRequest(config.localUserName);
 		registrationRequest.setAffiliation(config.affiliation);
 		registrationRequest.setEnrollmentID(config.localUserName);
+
+		// register的时候在registrationRequest中增加自定义属性
+		registrationRequest.addAttribute(new Attribute("attr1", "value1"));	//user-defined attributes
 		String enrollmentSecret = caClient.register(registrationRequest, admin);
-		Enrollment enrollment = caClient.enroll(config.localUserName, enrollmentSecret);
+
+		EnrollmentRequest enrollmentRequest = new EnrollmentRequest();
+		enrollmentRequest.addAttrReq("hf.Affiliation");		//default attribute
+		enrollmentRequest.addAttrReq("hf.EnrollmentID");	//default attribute
+		enrollmentRequest.addAttrReq("hf.Type");			//default attribute
+		enrollmentRequest.addAttrReq("attr1");				//user-defined attribute
+
+		Enrollment enrollment = caClient.enroll(config.localUserName, enrollmentSecret, enrollmentRequest);
 		Identity user = Identities.newX509Identity(config.MSPId, enrollment);
 		wallet.put(config.localUserName, user);
 		System.out.println("Successfully enrolled user " + config.localUserName + " and imported it into the wallet");

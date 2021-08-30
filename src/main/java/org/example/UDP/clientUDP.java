@@ -20,9 +20,9 @@ public class clientUDP {
         /* 1. 广播 */
         config.getNowDate(new String("1.1.broadcasting"));
         byte[] msg = config.newUserName.getBytes();
-//        InetAddress inetAddr = InetAddress.getByName("255.255.255.255");
-        InetAddress inetAddr = InetAddress.getByName("192.168.2.5");
-//        InetAddress inetAddr = InetAddress.getByName("192.168.2.75");
+        InetAddress inetAddr = InetAddress.getByName("255.255.255.255");
+//        InetAddress inetAddr = InetAddress.getByName("192.168.3.55");
+//        InetAddress inetAddr = InetAddress.getByName("192.168.3.57");
         DatagramSocket client = new DatagramSocket();
 
         DatagramPacket sendPack = new DatagramPacket(msg, msg.length, inetAddr, 8888);

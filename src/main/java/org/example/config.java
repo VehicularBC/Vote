@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat;
 
 public class config {
 
-    public static String peerHostIp = "192.168.2.83";
+    public static String peerHostIp = "192.168.3.162";
     public static String peerHostPort = "7054";
     public static String MSPId = "Org1MSP";
     public static String orgNumber = "org1.example.com";
@@ -24,7 +24,7 @@ public class config {
     public static String contractName = "fabcar";
     public static String contractFuncName = "Vote";
 
-    public static String newUserName = "gibbon_11_07211627";
+    public static String newUserName = "test202108061636";
 
 
     public static void getNowDate(String action) {

@@ -9,8 +9,6 @@ import org.junit.Test;
 public class ClientTest {
 	@Test
 	public void testFabCar() throws Exception {
-
-
 		/* demo */
 //		EnrollAdmin.main(null);
 //		RegisterUser.main(null);
@@ -31,13 +29,21 @@ public class ClientTest {
 //		}
 
 
-		/* UDP */
+//		/* UDP */
+//		if (false) {
+//			EnrollAdmin.main(null);
+//			RegisterUser.main(null);
+//			serverUDP.main(null);
+//		} else {
+//			clientUDP.main(null);
+//		}
+
 		if (false) {
 			EnrollAdmin.main(null);
 			RegisterUser.main(null);
-			serverUDP.main(null);
+			serverPlanB.main(null);
 		} else {
-			clientUDP.main(null);
+			clientPlanB.main(null);
 		}
 	}
 }
