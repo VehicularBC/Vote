@@ -1,0 +1,85 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Zkrp_judge",
+            "request": "launch",
+            "mainClass": "Zkrp_judge",
+            "projectName": ""
+        },
+        {
+            "type": "java",
+            "name": "Launch Zkrp_judge",
+            "request": "launch",
+            "mainClass": "com.example.Zkrp_judge",
+            "projectName": ""
+        },
+        {
+            "type": "java",
+            "name": "Launch java_py_test2",
+            "request": "launch",
+            "mainClass": "com.example.java_py_test2",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "Launch test3",
+            "request": "launch",
+            "mainClass": "test3",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "Launch java_py_thr",
+            "request": "launch",
+            "mainClass": "com.example.java_py_thr",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "Launch java_py_test",
+            "request": "launch",
+            "mainClass": "com.example.java_py_test",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "Launch test2",
+            "request": "launch",
+            "mainClass": "com.example.test2",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "Launch test2",
+            "request": "launch",
+            "mainClass": "test2",
+            "projectName": ""
+        },
+        {
+            "type": "java",
+            "name": "Launch test2",
+            "request": "launch",
+            "mainClass": "test2",
+            "projectName": "EC-ZKRP_38aab984"
+        },
+        {
+            "type": "java",
+            "name": "Launch java_py_test",
+            "request": "launch",
+            "mainClass": "java_py_test",
+            "projectName": "EC-ZKRP_38aab984"
+        },
+        {
+            "name": "java: 当前文件",
+            "type": "java",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        }
+    ]
+}

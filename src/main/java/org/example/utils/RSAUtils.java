@@ -16,6 +16,16 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import java.util.Map;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 /**
  * Java RSA 加密工具类
@@ -49,14 +59,12 @@ public class RSAUtils {
         // 得到私钥字符串
         String privateKeyString = Base64.getEncoder().encodeToString(privateKey.getEncoded());
         // 将公钥和私钥保存到Map
-//        //0表示公钥
-//        keyMap.put(0, publicKeyString);
-//        //1表示私钥
-//        keyMap.put(1, privateKeyString);
 
+//        keyMap.put(0, publicKeyString);  // 0表示公钥
+//        keyMap.put(1, privateKeyString);  // 1表示私钥
 
-        keyMap.put(0, new String("MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJavEik5Jdpootc5n6SSlaSxJVDd0yVE8z5pKYXRzivYZmYZ8w5x8pTVMNFPNxNe3wublvDqb2BYHbKpKfHzNz8CAwEAAQ=="));
-        keyMap.put(1, new String("MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAlq8SKTkl2mii1zmfpJKVpLElUN3TJUTzPmkphdHOK9hmZhnzDnHylNUw0U83E17fC5uW8OpvYFgdsqkp8fM3PwIDAQABAkA7OXNDZZVFq1O5kQn4lq6fTQr0JkOrhdavJIkv8h79JxSoYCAFHjpfzyW/HgATkXe3oJ6Oi/AIyODOwiJ9SzrNAiEArLHzQ2wnEbz4Sjf+Q5rZGlir4+0SZUof0RedJyAMnRsCIQDfXvXy6PUejQBNERtpHeDYuqAXH6B/WoDGS70P9ZPkrQIhAKJg+DEvIlVFb9ipaYS7tuNU+NrpcOCYn+4E3BmLwxB9AiAVGrPCL6B5MnlEzsj4NYp476kQhjxzy+k+0wkZ6OoAQQIgWbuy05OpOBD4i4uhr9LPl/5BBtJ8yoav4yc96PWBLRk="));
+        keyMap.put(0, new String("MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJCRtc+keRmLve9Jjq1vNMgOD15Ya0wxhRc4cPaqSEmjzCBg5+3XU/j4xuwtF/aLCaG8LwmQaTWEcVtGORA0dp8CAwEAAQ=="));
+        keyMap.put(1, new String("MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAkJG1z6R5GYu970mOrW80yA4PXlhrTDGFFzhw9qpISaPMIGDn7ddT+PjG7C0X9osJobwvCZBpNYRxW0Y5EDR2nwIDAQABAkAJNyb+LXkEUw9KCZS57+gCOKM4jschyQy3n8/TnKP7zaETCVUcvrsIhsBi3a1vKRH53NqVY49DppHR26UoawXBAiEA5IPhw6KzN3JKcSP02o8ZXUMTSjoX/TBbxSu6QszXA3MCIQCh9RTZmgd+0H+0/AJLt3GaiqgIdcX8ZLDqnYOwNHNtJQIgC5nCWUsmK/dqXgoEQSAomnpwPUFrvFe7IOxSXVfGxo8CIEWM6hdIfk+HWlBuqM27SZ4ETYTUjuGEnDUkz5ir7aXBAiEA4mLkQDLDch/2PtcbJr5IPur2esTTopUdoXusFDbTRDU="));
     }
 
     /**
@@ -93,9 +101,44 @@ public class RSAUtils {
         byte[] decoded = Base64.getDecoder().decode(privateKey);
         RSAPrivateKey priKey = (RSAPrivateKey) KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(decoded));
         //RSA解密
-        Cipher cipher = Cipher.getInstance("RSA");
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, priKey);
         String outStr = new String(cipher.doFinal(inputByte));
         return outStr;
+    }
+
+    /**
+     * 解码PublicKey
+     * @param key
+     * @return
+     */
+    public static PublicKey getPublicKey(String key) {
+        try {
+            byte[] byteKey = Base64.getDecoder().decode(key);
+            X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(byteKey);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            return keyFactory.generatePublic(x509EncodedKeySpec);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    /**
+     * 解码PrivateKey
+     * @param key
+     * @return
+     */
+    public static PrivateKey  getPrivateKey(String key) {
+        try {
+            byte[] byteKey = Base64.getDecoder().decode(key);
+            PKCS8EncodedKeySpec x509EncodedKeySpec = new PKCS8EncodedKeySpec(byteKey);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            return keyFactory.generatePrivate(x509EncodedKeySpec);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

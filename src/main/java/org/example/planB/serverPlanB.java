@@ -18,6 +18,8 @@ import java.util.Set;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Properties;
+import java.util.List;
+import java.util.HashSet;
 import java.util.concurrent.TimeoutException;
 import java.text.SimpleDateFormat;
 import java.net.Socket;
@@ -26,6 +28,18 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+
+
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 import org.hyperledger.fabric.gateway.Wallet;
 import org.hyperledger.fabric.gateway.Wallets;
@@ -55,6 +69,15 @@ import org.hyperledger.fabric_ca.sdk.HFCAClient;
 import org.hyperledger.fabric_ca.sdk.RegistrationRequest;
 import org.hyperledger.fabric_ca.sdk.EnrollmentRequest;
 import org.hyperledger.fabric_ca.sdk.Attribute;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
+
+import com.example.java_py_thr;
+import com.example.java_py_test;
+import com.example.Zkrp_judge;
 
 //服务端
 public class serverPlanB {
@@ -90,8 +113,6 @@ public class serverPlanB {
             registrationRequest.setAffiliation(config.affiliation);
             registrationRequest.setEnrollmentID(userName);
 
-            // register的时候在registrationRequest中增加自定义属性
-            registrationRequest.addAttribute(new Attribute("attr1", userName));	//user-defined attributes
 
             String enrollmentSecret = caClient.register(registrationRequest, admin);
 
@@ -100,8 +121,6 @@ public class serverPlanB {
             EnrollmentRequest enrollmentRequest = new EnrollmentRequest();
             enrollmentRequest.addAttrReq("hf.Affiliation");		//default attribute
             enrollmentRequest.addAttrReq("hf.EnrollmentID");	//default attribute
-            enrollmentRequest.addAttrReq("hf.Type");			//default attribute
-            enrollmentRequest.addAttrReq("attr1");				//user-defined attribute
 
             Enrollment enrollment = caClient.enroll(userName, enrollmentSecret, enrollmentRequest);
 
@@ -216,9 +235,23 @@ public class serverPlanB {
         network = gateway.getNetwork(config.channelName);  // mychannel
         contract = network.getContract(config.contractName);  // fabcar
     }
+    /* 白盒模型
+     * 用来判决是否满足信誉需求 */
+    public static boolean whiteBox(int input) throws Exception {
+        if (input >= config.reputation) {
+            return true;
+        }
+        return false;
+    }
+    public static String msgReceive(String data) {
+        /*
+        收到车辆发送的请求，解析得到json
+        * 包括用户名和commit，commit作范围判断估值*/
 
+        return "";
+    }
     public static void main(String[] args) throws Exception {
-        InitParam();  // 初始化系统参数
+//        InitParam();  // 初始化系统参数
 
         /* 1. 启动服务器 */
         DatagramPacket receive = new DatagramPacket(new byte[1024], 1024);
@@ -228,50 +261,88 @@ public class serverPlanB {
         config.getNowDate(new String("Server current start......"));
         System.out.println("-----------------------------------------------------------");
 
+        DatagramSocket client = new DatagramSocket();
+
+
+
         while (true) {
             /* 2. 监听到客户端消息 */
             server.receive(receive);
+            long begin = System.currentTimeMillis();
 
-            byte[] recvByte = Arrays.copyOfRange(receive.getData(), 0, receive.getLength());
+            byte[] msgByte = Arrays.copyOfRange(receive.getData(), 0, receive.getLength());
+            String msgRece = new String(msgByte);
+            System.out.println(msgRece);
             String recIp = receive.getAddress().getHostAddress();
-            String newUserName = new String(recvByte);
-            config.getNowDate(new String("1.Server receive msg:" + new String(recvByte)));
 
+            JSONObject json = JSONObject.parseObject(msgRece);
+//            System.out.println(json);
+            int type = Integer.parseInt(json.getString("Type"));
+            String newUserName = json.getString("userID");
+
+            int dstPort = 0;
+            JsonUtils txt = null;
+            String sendMsg = "";
             try {
-                config.getNowDate(newUserName);
                 /* 接收到入网信息和接收到创建.id信息 */
-                if(newUserName.startsWith("1")) {
+                if (type == 1) {
+                    String commit = json.getString("commit");
+//                    config.reputation;
+//                  System.out.println(Zkrp_judge.main(new String[] { "py",
+//                      "Users/gibbon/Desktop/fabcar/java/src/main/java/org/example/utils/EC-ZKRP/pythr.py" }));
+//                    // 逻辑判断
+//                    if (false) {
+//                        return
+//                    }
+
+
                     // 返回自身UID
-                    byte[] msg = config.localUserName.getBytes();
-                    DatagramSocket client = new DatagramSocket();
-                    InetAddress inetAddr = InetAddress.getByName(recIp);
-                    config.getNowDate(recIp);
-                    SocketAddress socketAddr = new InetSocketAddress(inetAddr, 9999);
-                    DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, socketAddr);
-                    client.send(sendPacket);
-                    client.close();
-                } else if (newUserName.startsWith("2")) {
-                    // 获取数据，发送到白板车
-                    config.getNowDate("register begin!!!");
+                    txt = new JsonUtils("2", config.localUserName, "", new String[]{}, "");
+                    dstPort = 9999;
+                } else if (type == 3) {
+                    // 逻辑判断
+                    String uListString = json.getString("uList"); // 得到纯字符串
+//                    System.out.println(uList);
+                    String[] uListStringList = uListString.split("\"");
+                    List list = Arrays.asList(uListStringList);
+                    Set set = new HashSet(list);
+                    String[] uListStringSet = (String [])set.toArray(new String[0]);
+
+                    int num = 0;
+                    for (int i = 0; i < uListStringSet.length; i ++) {
+                        if (uListStringSet[i].length() >= 2) {
+                            num ++;
+                        }
+                    }
+                    if (num < config.minUIDNum) {
+                        return;
+                    }
+
+                    long beginReg = System.currentTimeMillis();
                     RegisterUser(newUserName);
-                    config.getNowDate("register finish, then send id file!!!");
+                    config.getNowDate("认证车注册时长:" + (System.currentTimeMillis() - beginReg) / 1000.0 + "秒");
 
                     String content = new String(Files.readAllBytes(Paths.get("wallet/" + newUserName + ".id")));
-                    // 获取数据，发送到白板车
-                    byte[] msg = content.getBytes();
-                    DatagramSocket client = new DatagramSocket();
+                    txt = new JsonUtils("4", config.localUserName, "", new String[]{}, content);
+                    dstPort = 10999;
+                }
+//                System.out.println(sendMsg);
+                if (dstPort != 0) {
+                    sendMsg = JSON.toJSONString(txt);
+                    byte[] msg = sendMsg.getBytes();
                     InetAddress inetAddr = InetAddress.getByName(recIp);
-                    SocketAddress socketAddr = new InetSocketAddress(inetAddr, 10999);
+                    SocketAddress socketAddr = new InetSocketAddress(inetAddr, dstPort);
                     DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, socketAddr);
                     client.send(sendPacket);
-                    client.close();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
+            // 当前用户交互已完成，断开连接
             System.out.println("-----------------------------------------------------------");
-            config.getNowDate("finish the interaction with user " + newUserName);
+            config.getNowDate("认证车总时长:" + (System.currentTimeMillis() - begin) / 1000.0 + "秒");
+            System.out.println("finish the interaction with user " + newUserName);
             System.out.println("-----------------------------------------------------------");
 
         }
