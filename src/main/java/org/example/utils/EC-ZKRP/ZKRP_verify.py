@@ -94,8 +94,8 @@ def verify():
     # print(result_text)
     return int(ZKRP.a)
 
-def judgement(CAcar_reputation):
-    val1 = CAcar_reputation
+def judgement(CAcar_reputation): #判断函数：根据历史+链码计算+记录在区块链中 / +区域的分级 当前时间相关（？） information age/life 
+    val1 = CAcar_reputation #自身声誉 X 
     val2 = verify()
     if val1 <= val2:
         return True

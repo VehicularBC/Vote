@@ -13,18 +13,19 @@ import java.io.PrintStream;
 import java.io.InputStream;
 
 public class java_py_thr {
-    public static String judge(String[] args) {
+    public static String judeg(String args) {
+
         String res = null;
-        Process proc;
         try {
             InetAddress addr = InetAddress.getLocalHost();
             String host = addr.getHostName();
-            Socket socket = new Socket(host, 12346);
+
+            Socket socket = new Socket(host, 12300);
 
             OutputStream os = socket.getOutputStream();
             PrintStream out = new PrintStream(os);
 
-            out.print("60");
+            out.print(args);
             out.print("over");
 
             InputStream is = socket.getInputStream();

@@ -288,8 +288,7 @@ public class serverPlanB {
                 if (type == 1) {
                     String commit = json.getString("commit");
 //                    config.reputation;
-//                  System.out.println(Zkrp_judge.main(new String[] { "py",
-//                      "Users/gibbon/Desktop/fabcar/java/src/main/java/org/example/utils/EC-ZKRP/pythr.py" }));
+                  System.out.println(Zkrp_judge.Repjudge("90"));
 //                    // 逻辑判断
 //                    if (false) {
 //                        return

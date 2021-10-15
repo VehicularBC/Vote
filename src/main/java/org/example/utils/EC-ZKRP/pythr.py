@@ -7,7 +7,7 @@ import ZKRP_verify as zv
 def main():
     serversocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     host = socket.gethostname()
-    port = 12346
+    port = 12300
     serversocket.bind((host, port))
 
     serversocket.listen(5)
@@ -25,7 +25,7 @@ def main():
             print(identifier)
             pass
         pass
-    serversocket.close()
+        # serversocket.close()
     pass
 
 class ServerThreading(threading.Thread):
@@ -46,8 +46,10 @@ class ServerThreading(threading.Thread):
                 if msg.strip().endswith('over'):
                     mag = msg[:-4]
                     break
-
-            sendmsg = zv.judgement(self._rec)
+            
+            tempmsg = int(mag)
+            print(tempmsg)
+            sendmsg = zv.judgement(tempmsg)
 
             self._socket.send(("%s"%sendmsg).encode(self._encoding))
             pass
