@@ -39,8 +39,15 @@ public class clientPlanB {
 
     public static boolean printError(int e) {
         if (e == 0) {
+            // 无事发生
             return false;
         } else {
+
+//            // 需要输出信息：错误码、完成状态、耗费时长
+//            System.out.println("---------------------------------------------------------------------");
+//            config.getNowDate("白板车认证总时长:" + (System.currentTimeMillis() - begin) / 1000.0 + "秒");
+//            System.out.println(new String("received identify and then exit"));
+//            System.out.println("---------------------------------------------------------------------");
             if (e == 2001) {
                 System.out.println("广播等待回复超时");
             }
@@ -94,7 +101,7 @@ public class clientPlanB {
 //        System.out.println(json.getJSONArray("uList"));
 
         // #################################################################
-        JsonUtils txt = new JsonUtils("1", config.newUserName, commit, new String[]{}, "");
+        JsonUtils txt = new JsonUtils("1", 0, config.newUserName, commit, new String[]{}, "");
         String msg = JSON.toJSONString(txt);
         System.out.println(msg);
 //        System.out.println("jdk rsa sign : " + msg);
@@ -150,7 +157,7 @@ public class clientPlanB {
             uList[i] = (String)(receivedUID.get(i));
         }
 //        System.out.println(uList);
-        txt = new JsonUtils("3", config.newUserName, "", uList, "");
+        txt = new JsonUtils("3", 0, config.newUserName, "", uList, "");
         msg = JSON.toJSONString(txt);
         System.out.println(msg);
         msgB = msg.getBytes();

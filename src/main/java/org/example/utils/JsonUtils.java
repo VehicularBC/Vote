@@ -13,32 +13,42 @@ public class JsonUtils {
      */
     private String type;  // 报文类型
     @JSONField(name="Type")
-    public String getType() {return type;}
+    public String getType() { return type; }
+
+    private int errCode;  // 错误代码
+    @JSONField(name="errCode")
+    public int getErrCode() { return errCode; }
 
     private String userID;  // 用户ID
     @JSONField(name="userID")
-    public String getUserID() {return userID;}
+    public String getUserID() { return userID; }
 
+    // 留白
     private long repTime;  // 白板车得到上一区域声誉值的时间戳(information/life age)
 
     private String commit;  // 车辆入网携带信誉值加密信息
     @JSONField(name="commit")
-    public String getCommit() {return commit;}
+    public String getCommit() { return commit; }
 
     private String[] uList;  // 车辆再次申请入网发送UID集合
     @JSONField(name="uList")
-    public String[] getUList() {return uList;}
+    public String[] getUList() { return uList; }
     
     private String walletContent;  // 车辆认证成功后.id文件内容
     @JSONField(name="wC")
-    public String getWID() {return walletContent;}
+    public String getWID() { return walletContent; }
 
     private long curTime;  // 当前消息时间戳
+    @JSONField(name="curTime")
+    public long getCurTime() { return curTime; }
 
 
-    public JsonUtils(String type, String userID, String commit, String[] uList, String walletContent) {
+    public JsonUtils(String type, int errCode, String userID, String commit, String[] uList, String walletContent) {
         super();
+        this.curTime = System.currentTimeMillis();
+
         this.type = type;
+        this.errCode = errCode;
         this.userID = userID;
         this.commit = commit;
         this.uList = uList;

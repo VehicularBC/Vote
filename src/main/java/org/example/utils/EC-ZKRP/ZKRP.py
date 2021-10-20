@@ -37,7 +37,7 @@ def produce_ZKRP(m):
     alpha = number.getRandomRange(1,int(pow(order,1/2)))
     M = alpha**2
     temp = ((w**2)*(m-a+1)*(b-m+1))%order
-    while (M >= temp):
+    while M >= temp:
         alpha = number.getRandomRange(1,int(pow(order,1/2)))
         M = alpha**2
 
@@ -58,7 +58,6 @@ def produce_ZKRP(m):
     return C, C_prime, C_prime_prime, C1_prime, C2_prime, R, EL, SQR1, SQR2
 
 def ZKRP_verify(C, C_prime, C_prime_prime, C1_prime, C2_prime, R, EL, SQR1, SQR2):
-
     global a, b
     G = public.G
     H = public.H
@@ -85,7 +84,7 @@ def ZKRP_verify(C, C_prime, C_prime_prime, C1_prime, C2_prime, R, EL, SQR1, SQR2
     # 7
     vR = (R>0)
 
-    return (vEL and vSQR1 and (C_prime_prime == vC_prime_prime) and vSQR2 and vR)
+    return vEL and vSQR1 and (C_prime_prime == vC_prime_prime) and vSQR2 and vR
 
 '''
 Usage example:

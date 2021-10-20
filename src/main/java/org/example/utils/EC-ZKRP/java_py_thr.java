@@ -1,4 +1,4 @@
-package com.example;
+package org.example;
 
 import java.lang.System;
 import java.io.BufferedReader;
@@ -20,7 +20,7 @@ public class java_py_thr {
             InetAddress addr = InetAddress.getLocalHost();
             String host = addr.getHostName();
 
-            Socket socket = new Socket(host, 12300);
+            Socket socket = new Socket(host, 12304);
 
             OutputStream os = socket.getOutputStream();
             PrintStream out = new PrintStream(os);

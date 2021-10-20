@@ -36,7 +36,7 @@ def EL_proof(msg, s, r, G1, H1, G2, H2):
     X = u + Hash * msg
     X1 = v1 + Hash * s
     X2 = v2 + Hash * r
-    return (Hash, X, X1, X2)
+    return Hash, X, X1, X2
 
 def v_EL_proof(Hash, X, X1, X2, G1, H1, G2, H2, A, B):
     # vC1 would be equal to C1. So would vC2.

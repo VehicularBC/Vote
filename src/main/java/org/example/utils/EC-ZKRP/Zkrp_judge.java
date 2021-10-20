@@ -1,7 +1,6 @@
-package com.example;
+package org.example;
 
 import java.io.IOException;
-import com.example.java_py_thr;
 
 public class Zkrp_judge {
 
@@ -9,7 +8,7 @@ public class Zkrp_judge {
         Process proc;
         String judgeres = null;
         try {
-            String[] args1 = new String[] { "python", "/Users/gibbon/Desktop/fabcar/java/src/main/java/org/example/utils/EC-ZKRP/pythr.py", };
+            String[] args1 = new String[] { "python", "/Users/gibbon/Desktop/fabcar/java/src/main/java/org/example/utils/EC-ZKRP/pythr.py" };
             proc = Runtime.getRuntime().exec(args1);
             java_py_thr thr = new java_py_thr();
             judgeres = thr.judeg(args);

@@ -56,10 +56,10 @@ def verify():
         elif(temp[0] == 'R'):
             # print(temp)
             R = int(temp[1])
-        elif(temp[0] == 'EL'):
+        elif temp[0] == 'EL':
             # print(temp)
             EL = eval(temp[1])
-        elif(temp[0] == 'SQR1'):
+        elif temp[0] == 'SQR1':
             # print(temp)
             val = eval(temp[1])
             X = Point(val[4][0], val[4][1], cv)

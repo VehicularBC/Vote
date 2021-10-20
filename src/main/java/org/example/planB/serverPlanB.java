@@ -75,9 +75,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 
-import com.example.java_py_thr;
-import com.example.java_py_test;
-import com.example.Zkrp_judge;
+//import org.example.java_py_thr;
+//import org.example.java_py_test;
+//import org.example.Zkrp_judge;
 
 //服务端
 public class serverPlanB {
@@ -263,40 +263,47 @@ public class serverPlanB {
 
         DatagramSocket client = new DatagramSocket();
 
+        String judeg = java_py_test.judge_one("0");
+        System.out.println(judeg);
 
 
         while (true) {
             /* 2. 监听到客户端消息 */
-            server.receive(receive);
             long begin = System.currentTimeMillis();
+            server.receive(receive);
+            String recIp = receive.getAddress().getHostAddress();  // IP
+            byte[] msgByte = Arrays.copyOfRange(receive.getData(), 0, receive.getLength());  // 收到消息
 
-            byte[] msgByte = Arrays.copyOfRange(receive.getData(), 0, receive.getLength());
             String msgRece = new String(msgByte);
             System.out.println(msgRece);
-            String recIp = receive.getAddress().getHostAddress();
 
-            JSONObject json = JSONObject.parseObject(msgRece);
+            JSONObject json = JSONObject.parseObject(msgRece);  // 字符串转json格式
 //            System.out.println(json);
+            /* 收到消息格式 */
             int type = Integer.parseInt(json.getString("Type"));
             String newUserName = json.getString("userID");
 
+            /* 网络参数 */
             int dstPort = 0;
+
             JsonUtils txt = null;
-            String sendMsg = "";
             try {
                 /* 接收到入网信息和接收到创建.id信息 */
                 if (type == 1) {
+                    // 处理加密信誉值
                     String commit = json.getString("commit");
+                    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //                    config.reputation;
-                  System.out.println(Zkrp_judge.Repjudge("90"));
+//                  System.out.println(Zkrp_judge.Repjudge("90"));
 //                    // 逻辑判断
 //                    if (false) {
 //                        return
 //                    }
+                    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
                     // 返回自身UID
-                    txt = new JsonUtils("2", config.localUserName, "", new String[]{}, "");
+                    txt = new JsonUtils("2", 0, config.localUserName, "", new String[]{}, "");
                     dstPort = 9999;
                 } else if (type == 3) {
                     // 逻辑判断
@@ -317,18 +324,20 @@ public class serverPlanB {
                         return;
                     }
 
+                    // 注册身份
                     long beginReg = System.currentTimeMillis();
                     RegisterUser(newUserName);
                     config.getNowDate("认证车注册时长:" + (System.currentTimeMillis() - beginReg) / 1000.0 + "秒");
 
                     String content = new String(Files.readAllBytes(Paths.get("wallet/" + newUserName + ".id")));
-                    txt = new JsonUtils("4", config.localUserName, "", new String[]{}, content);
+                    txt = new JsonUtils("4", 0, config.localUserName, "", new String[]{}, content);
                     dstPort = 10999;
                 }
 //                System.out.println(sendMsg);
                 if (dstPort != 0) {
-                    sendMsg = JSON.toJSONString(txt);
+                    String sendMsg = JSON.toJSONString(txt);
                     byte[] msg = sendMsg.getBytes();
+
                     InetAddress inetAddr = InetAddress.getByName(recIp);
                     SocketAddress socketAddr = new InetSocketAddress(inetAddr, dstPort);
                     DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, socketAddr);
@@ -346,5 +355,7 @@ public class serverPlanB {
 
         }
 
+
+        // client.close();
     }
 }
