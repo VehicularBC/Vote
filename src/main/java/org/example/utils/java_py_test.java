@@ -11,8 +11,7 @@ public class java_py_test {
         Process proc;
         String res = null;
         try {
-            // long t1 = System.currentTimeMillis();
-            String[] args1 = new String[] { "python", "/Users/gibbon/Desktop/fabcar/java/src/main/java/org/example/utils/EC-ZKRP/ZKRP_verify.py", arg };
+            String[] args1 = new String[] { "python3", "/Users/gibbon/Desktop/fabcar/java/src/main/java/org/example/utils/EC-ZKRP/ZKRP_veirfy.py", arg };
             proc = Runtime.getRuntime().exec(args1);
             BufferedReader in = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             String line = null;

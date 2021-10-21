@@ -14,7 +14,7 @@ import time
 def verify():
 
     # open file
-    file_path = "ZKRP.txt"
+    file_path = "/Users/gibbon/Desktop/fabcar/java/src/main/java/org/example/utils/EC-ZKRP/ZKRP.txt"
     zkrp = open(file_path, 'r')
     zkrp_content = zkrp.read()
     # print(zkrp_content)
@@ -113,4 +113,5 @@ if __name__ == '__main__':
     for i in range(1, len(sys.argv)):  
         rep = int(sys.argv[i])  
     # rep = 60
+
     main(rep)

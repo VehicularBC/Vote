@@ -5,15 +5,12 @@ org/example/config.class
 org/example/SocketThread.class
 org/example/serverPlanB.class
 org/example/UDPUtils.class
-com/example/Zkrp_judge.class
 org/example/serverPlanB$1$1.class
 org/example/clientPlanB.class
 org/example/serverPlanB$1.class
 org/example/RegisterUser$1.class
 org/example/RegisterUser.class
-com/example/java_py_thr.class
 org/example/JsonUtils.class
-com/example/java_py_test.class
 org/example/ClientApp.class
 org/example/SocketThread$1$1.class
 org/example/FabricDemo.class
@@ -25,3 +22,4 @@ org/example/caCar.class
 org/example/serverUDP$1.class
 org/example/RSAUtils.class
 org/example/serverUDP$1$1.class
+org/example/java_py_test.class

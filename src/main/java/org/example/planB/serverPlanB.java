@@ -263,7 +263,9 @@ public class serverPlanB {
 
         DatagramSocket client = new DatagramSocket();
 
-        String judeg = java_py_test.judge_one("0");
+
+
+        String judeg = java_py_test.judge_one("40");
         System.out.println(judeg);
 
 
