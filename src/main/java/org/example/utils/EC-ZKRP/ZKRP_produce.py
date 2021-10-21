@@ -1,24 +1,18 @@
 # -*- coding:utf-8 -*-  
 import ZKRP
-import tkinter as tk
-import tkinter.font as font
-import time
+import sys
 
-def produce(secret_value,upper,bounder):
+def produce(secret_value):
 
-    val1 = secret_value
-    val2 = upper
-    val3 = bounder
+    SV  = int(secret_value)
+
+    val1 = SV
+    val2 = SV + 10
+    val3 = SV - 10
 
     m = int(val1)
     ZKRP.b = int(val2)
     ZKRP.a = int(val3)
-
-    '''
-    if( (m-ZKRP.a+1) * (ZKRP.b-m+1) <= 0 or ZKRP.b < ZKRP.a):
-        result_label.configure(text="請輸入正確內容！",fg='red')
-        return
-    '''
 
     C, C_prime, C_prime_prime, C1_prime, C2_prime, R, EL, SQR1, SQR2 = ZKRP.produce_ZKRP(m)
 
@@ -39,16 +33,15 @@ def produce(secret_value,upper,bounder):
         + '{} = {}\n'.format('EL', str(EL)) \
         + '{} = {}\n'.format('SQR1', SQR1_text) \
         + '{} = {}\n'.format('SQR2', SQR2_text)
-    # with open('./ZKRP.txt', 'w') as f:
-    #     f.write(content)
-
-    result_text = "successfully create commitment\n" + "secret interval：[{}, {}]\n".format(str(ZKRP.a), str(ZKRP.b))
-    # result_label.configure(text=result_text, fg='black')
-    print(result_text)
     return content
 
-t1 = time.time()
-Content = produce(73.54, 80, 60)
-t2 = time.time()
-print("the production time cost is :",t2 - t1)
-print("the content is:" + Content)
+def main(rep):
+    print(produce(rep))
+
+
+if __name__ == '__main__':
+    for i in range(1, len(sys.argv)):  
+        rep = int(sys.argv[i])  
+    # rep = 60
+
+    main(rep)

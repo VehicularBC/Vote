@@ -14,7 +14,7 @@ import time
 def verify():
 
     # open file
-    file_path = "/Users/gibbon/Desktop/fabcar/java/src/main/java/org/example/utils/EC-ZKRP/ZKRP.txt"
+    file_path = "/home/hbx/Desktop/Vote/src/main/java/org/example/utils/EC-ZKRP/ZKRP.txt"
     zkrp = open(file_path, 'r')
     zkrp_content = zkrp.read()
     # print(zkrp_content)
