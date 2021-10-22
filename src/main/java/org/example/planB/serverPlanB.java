@@ -43,6 +43,7 @@ import java.security.spec.X509EncodedKeySpec;
 import org.hyperledger.fabric.gateway.Wallet;
 import org.hyperledger.fabric.gateway.Wallets;
 import org.apache.milagro.amcl.RSA2048.private_key;
+import org.example.utils.saveTXT;
 import org.hyperledger.fabric.gateway.Identities;
 import org.hyperledger.fabric.gateway.Identity;
 import org.hyperledger.fabric.gateway.X509Identity;
@@ -291,10 +292,11 @@ public class serverPlanB {
                 if (type == 1) {
                     // 处理加密信誉值
                     String commit = json.getString("commit");
+                    saveTXT.saveAstxt(commit);
                     String judeg = java_py_test.judge_one(String.valueOf(config.reputation));
-                     if (judeg == "true" || judeg == "True") {
+                    if (judeg == "true" || judeg == "True") {
                         break;
-                     }
+                    }
                     // 返回自身UID
                     txt = new JsonUtils("2", 0, config.localUserName, "", new String[] {}, "");
                     dstPort = 9999;
