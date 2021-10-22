@@ -291,8 +291,8 @@ public class serverPlanB {
                 if (type == 1) {
                     // 处理加密信誉值
                     String commit = json.getString("commit");
-                    String judeg = java_py_test.judge_one(new String(config.reputation));
-                     if (judeg) {
+                    String judeg = java_py_test.judge_one(String.valueOf(config.reputation));
+                     if (judeg == "true" || judeg == "True") {
                         break;
                      }
                     // 返回自身UID

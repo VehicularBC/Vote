@@ -18,6 +18,8 @@ public class JsonUtils {
     private int errCode;  // 错误代码
     @JSONField(name="errCode")
     public int getErrCode() { return errCode; }
+    @JSONField(name="errCode")
+    public void setErrCode(int _code) { this.errCode = _code; }
 
     private String userID;  // 用户ID
     @JSONField(name="userID")

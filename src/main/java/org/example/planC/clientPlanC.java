@@ -60,11 +60,15 @@ public class clientPlanC {
     }
 
     public static void main(String[] args) throws Exception {
+        byte[] msgB = null;
+        String dstIP = null;
+        InetAddress inetAddrForBroad = InetAddress.getByName("255.255.255.255");
         DatagramSocket client = new DatagramSocket();
         DatagramPacket recvPacket = new DatagramPacket(new byte[MAXREV], MAXREV);
         DatagramSocket serverForBroad = new DatagramSocket(9999);
         DatagramSocket serverForId = new DatagramSocket(10999);
         long begin = System.currentTimeMillis();
+        DatagramPacket sendPack = new DatagramPacket(msgB, msgB.length, inetAddrForBroad, 8888);
 
 
         int err = 0;
@@ -73,8 +77,8 @@ public class clientPlanC {
 
         boolean leaveState = false;
         // 1.自身用户信息，得到token
-        leaveState = True;
-        txt = new JsonUtilsC("1", 0, config.localUserName, "", "");
+        leaveState = true;
+        txt = new JsonUtilsC("1", 0, config.localUserName);
         InetAddress inetAddrForId = InetAddress.getByName(dstIP);
         sendPack = new DatagramPacket(msgB, msgB.length, inetAddrForId, 8888);
         client.send(sendPack);
@@ -110,7 +114,7 @@ public class clientPlanC {
             long break2 = System.currentTimeMillis();
 //            txt = new JsonUtilsC("4", 0, config.localUserName, "", new String[]{}, "");
 
-            InetAddress inetAddrForId = InetAddress.getByName(dstIP);
+            inetAddrForId = InetAddress.getByName(dstIP);
             sendPack = new DatagramPacket(msgB, msgB.length, inetAddrForId, 8888);
             client.send(sendPack);
 

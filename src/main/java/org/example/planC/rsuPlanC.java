@@ -303,7 +303,7 @@ public class rsuPlanC {
                         String token = JSON.toJSONString(tokenJson);
 
                         txt = new JsonUtilsC("2", 0, config.localUserName);
-                        txt.getToken(token);
+                        txt.setToken(token);
                         dstPort = 10999;
                     case 0:
 //                    // RSU提前切换

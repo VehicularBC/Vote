@@ -16,7 +16,7 @@ public class JsonUtilsC {
     @JSONField(name="Type")
     public String getType() { return type; }
     @JSONField(name="Type")
-    public String setType(String _type) { this.type = _type; }
+    public void setType(String _type) { this.type = _type; }
 
     private int errCode;  // 错误代码
     @JSONField(name="errCode")
@@ -33,23 +33,25 @@ public class JsonUtilsC {
     @JSONField(name="commit")
     public String getCommit() { return commit; }
 
-    
+
     private String token;  // 车辆认证成功后.id文件内容
     @JSONField(name="token")
     public String getToken() { return token; }
+    @JSONField(name="token")
+    public void setToken(String _token) { this.token = _token; }
 
     private String walletContent;  // 车辆认证成功后.id文件内容
     @JSONField(name="wc")
     public String getWC() { return walletContent; }
     @JSONField(name="wc")
-    public String setWC(String _wc) { this.walletContent = _wc; }
+    public void setWC(String _wc) { this.walletContent = _wc; }
 
     private long curTime;  // 当前消息时间戳
     @JSONField(name="curTime")
     public long getCurTime() { return curTime; }
 
 
-    public void JsonUtilsC(String type, int errCode, String curNodeName) {
+    public JsonUtilsC(String type, int errCode, String curNodeName) {
         super();
         this.curTime = System.currentTimeMillis();
 

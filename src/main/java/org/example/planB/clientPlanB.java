@@ -103,6 +103,7 @@ public class clientPlanB {
 
         // #################################################################
         JsonUtils txt = new JsonUtils("1", 0, config.newUserName, commit, new String[] {}, "");
+//        txt.setErrCode(1);
         String msg = JSON.toJSONString(txt);
         System.out.println(msg);
         // System.out.println("jdk rsa sign : " + msg);
