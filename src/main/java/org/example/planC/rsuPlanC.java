@@ -291,7 +291,7 @@ public class rsuPlanC {
             String newUserName = json.getString("userID");
 
 
-            JsonUtils txt = null;
+            JsonUtilsC txt = null;
 
             int dstPort = 0;
             try {
@@ -299,10 +299,11 @@ public class rsuPlanC {
                     case 1:
                         // 收到离开请求：查询信誉值然后制作token字段
 
-                        JsonUtils tokenJson = null;
+                        JsonUtilsC tokenJson = null;
                         String token = JSON.toJSONString(tokenJson);
 
-                        txt = new JsonUtils("2", 0, config.localUserName, "", new String[]{}, "");
+                        txt = new JsonUtilsC("2", 0, config.localUserName);
+                        txt.getToken(token);
                         dstPort = 10999;
                     case 0:
 //                    // RSU提前切换
@@ -314,7 +315,8 @@ public class rsuPlanC {
 
                         if (1 == 1) {
                             String content = new String(Files.readAllBytes(Paths.get("wallet/" + newUserName + ".id")));
-                            txt = new JsonUtils("4", 0, config.localUserName, "", new String[]{}, "");
+                            txt = new JsonUtilsC("4", 0, config.localUserName);
+                            txt.setWC(content);
                         }
                         break;
                     default:

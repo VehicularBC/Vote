@@ -60,6 +60,13 @@ public class clientPlanC {
     }
 
     public static void main(String[] args) throws Exception {
+        DatagramSocket client = new DatagramSocket();
+        DatagramPacket recvPacket = new DatagramPacket(new byte[MAXREV], MAXREV);
+        DatagramSocket serverForBroad = new DatagramSocket(9999);
+        DatagramSocket serverForId = new DatagramSocket(10999);
+        long begin = System.currentTimeMillis();
+
+
         int err = 0;
 
         JsonUtilsC txt = null;
@@ -67,17 +74,16 @@ public class clientPlanC {
         boolean leaveState = false;
         // 1.自身用户信息，得到token
         leaveState = True;
+        txt = new JsonUtilsC("1", 0, config.localUserName, "", "");
+        InetAddress inetAddrForId = InetAddress.getByName(dstIP);
+        sendPack = new DatagramPacket(msgB, msgB.length, inetAddrForId, 8888);
+        client.send(sendPack);
         long break1 = System.currentTimeMillis();
         while (!leaveState) {
             // 等返回token
             if (true) {
                 break;
             }
-            txt = new JsonUtils("1", 0, config.localUserName, "", "");
-
-            InetAddress inetAddrForId = InetAddress.getByName(dstIP);
-            sendPack = new DatagramPacket(msgB, msgB.length, inetAddrForId, 8888);
-            client.send(sendPack);
 
             /* 接收 token */
             String walletContent = "";
@@ -96,13 +102,13 @@ public class clientPlanC {
                     break;
                 }
 
+            }
         }
-
 
         // 2.发送token，来获取id文件
         if (leaveState) {
             long break2 = System.currentTimeMillis();
-            txt = new JsonUtils("4", 0, config.localUserName, "", new String[]{}, "");
+//            txt = new JsonUtilsC("4", 0, config.localUserName, "", new String[]{}, "");
 
             InetAddress inetAddrForId = InetAddress.getByName(dstIP);
             sendPack = new DatagramPacket(msgB, msgB.length, inetAddrForId, 8888);

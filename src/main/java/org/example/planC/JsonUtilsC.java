@@ -41,21 +41,20 @@ public class JsonUtilsC {
     private String walletContent;  // 车辆认证成功后.id文件内容
     @JSONField(name="wc")
     public String getWC() { return walletContent; }
+    @JSONField(name="wc")
+    public String setWC(String _wc) { this.walletContent = _wc; }
 
     private long curTime;  // 当前消息时间戳
     @JSONField(name="curTime")
     public long getCurTime() { return curTime; }
 
 
-    public JsonUtils(String type, int errCode, String userID, String commit, String walletContent) {
+    public void JsonUtilsC(String type, int errCode, String curNodeName) {
         super();
         this.curTime = System.currentTimeMillis();
 
         this.type = type;
         this.errCode = errCode;
-        this.userID = userID;
-        this.commit = commit;
-        this.uList = uList;
-        this.walletContent = walletContent;
+        this.userID = curNodeName;
     }
 }
