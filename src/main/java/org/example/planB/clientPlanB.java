@@ -64,7 +64,7 @@ public class clientPlanB {
          */
 
         // 传入carRep
-        int carReputation = 60;
+        int carReputation = config.reputation;
         String zkrp = java_py_test.produce("75");
 
         // 数字签名

@@ -49,6 +49,9 @@ public class config {
 
     public static boolean muteAll = true;
 
+    // plan C
+    public static String token = "";
+
 
     public static void getNowDate(String action) {
         if (muteAll) {

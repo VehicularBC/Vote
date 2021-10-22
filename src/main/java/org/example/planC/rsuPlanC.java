@@ -1,3 +1,8 @@
+/* 预切换方案
+* RSU服务器
+* 接受其他区域RSU的申请或者车辆的申请
+* */
+
 package org.example;
 
 import java.io.File;
@@ -28,6 +33,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+
 
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -73,17 +79,19 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+
 //import org.example.java_py_thr;
 //import org.example.java_py_test;
 //import org.example.Zkrp_judge;
 
 //服务端
-public class serverPlanB {
+public class rsuPlanC {
     private static final int MAXRECEIVED = 255;
     private Socket socket;
 
     private static String orgName = "org1.example.com";
     private static String orgConnectionName = "connection-org1.yaml";
+
 
     private static Wallet wallet = null;
     private static X509Identity adminIdentity = null;
@@ -96,42 +104,40 @@ public class serverPlanB {
     private static Network network = null;
     private static Contract contract = null;
 
-    // HFCAClient caClient = null;
+    //    HFCAClient caClient = null;
     public static void RegisterUser(String userName) {
         try {
             // Check to see if we've already enrolled the user.
-            // if (wallet.get(userName) != null) {
-            // System.out.println("An identity for the user " + userName + " already exists
-            // in the wallet");
-            // return;
-            // }
+//            if (wallet.get(userName) != null) {
+//                System.out.println("An identity for the user " + userName + " already exists in the wallet");
+//                return;
+//            }
 
-            // Register the user, enroll the user, and import the new identity into the
-            // wallet.
+            // Register the user, enroll the user, and import the new identity into the wallet.
             RegistrationRequest registrationRequest = new RegistrationRequest(userName);
             registrationRequest.setAffiliation(config.affiliation);
             registrationRequest.setEnrollmentID(userName);
 
+
             String enrollmentSecret = caClient.register(registrationRequest, admin);
 
-            // 定义一个enrollmentRequest，在里面设置需要加入到证书中的属性
-            // 不设置的话，只把默认的hf.Affiliation, hf.EnrollmentID, hf.Type加入到证书中
+            //定义一个enrollmentRequest，在里面设置需要加入到证书中的属性
+            //不设置的话，只把默认的hf.Affiliation, hf.EnrollmentID, hf.Type加入到证书中
             EnrollmentRequest enrollmentRequest = new EnrollmentRequest();
-            enrollmentRequest.addAttrReq("hf.Affiliation"); // default attribute
-            enrollmentRequest.addAttrReq("hf.EnrollmentID"); // default attribute
+            enrollmentRequest.addAttrReq("hf.Affiliation");		//default attribute
+            enrollmentRequest.addAttrReq("hf.EnrollmentID");	//default attribute
 
             Enrollment enrollment = caClient.enroll(userName, enrollmentSecret, enrollmentRequest);
 
             Identity user = Identities.newX509Identity(config.MSPId, enrollment);
-            // Identity user = Identity.createIdentity(config.MSPId, enrollment.getCert(),
-            // enrollment.getKey());
+//            Identity user = Identity.createIdentity(config.MSPId, enrollment.getCert(), enrollment.getKey());
             wallet.put(userName, user);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static String voteForcar(String carID) throws Exception { // 为新车进行投票，调用链码，返回一个byte类数组，第一个元素为链码返回结果（待测试）
+    public static String voteForcar(String carID) throws Exception { //为新车进行投票，调用链码，返回一个byte类数组，第一个元素为链码返回结果（待测试）
         byte[] voteResult = null;
 
         // create a gateway connection
@@ -145,15 +151,14 @@ public class serverPlanB {
 
             config.getNowDate(new String("2.1.2.receiving for voting"));
         } catch (ContractException | TimeoutException | InterruptedException e) {
-            // config.getNowDate(new String());
+//            config.getNowDate(new String());
             e.printStackTrace();
         }
         return new String(voteResult, StandardCharsets.UTF_8);
     }
 
-    private static void InitParam() throws Exception {
-        Path networkConfigPath = Paths.get("src", "main", "resources", "crypto-config", "peerOrganizations", orgName,
-                orgConnectionName);
+    private static void InitParam() throws Exception  {
+        Path networkConfigPath = Paths.get("src", "main", "resources", "crypto-config", "peerOrganizations", orgName, orgConnectionName);
 
         // Create a wallet for managing identities
         Path walletPath = Paths.get("wallet");
@@ -161,9 +166,9 @@ public class serverPlanB {
 
         cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
 
-        /*
-         * 注册 HFCAclient、
-         */
+        /* 注册
+         * HFCAclient、
+         * */
         // Create a CA client for interacting with the CA.
         Properties props = new Properties();
         props.put("pemFile", "src/main/resources/crypto-config/" + "peerOrganizations/" + config.pemDir);
@@ -171,6 +176,7 @@ public class serverPlanB {
 
         caClient = HFCAClient.createNewInstance("https://" + config.peerHostIp + ":" + config.peerHostPort, props);
         caClient.setCryptoSuite(cryptoSuite);
+
 
         adminIdentity = (X509Identity) wallet.get(config.adminName);
         if (adminIdentity == null) {
@@ -222,43 +228,39 @@ public class serverPlanB {
 
         };
 
-        /*
-         * 调用SDK builder、gateway、network、contract
-         */
+        /* 调用SDK
+         * builder、gateway、network、contract
+         * */
         // 基于本地用户和配置文件
         builder = Gateway.createBuilder();
         builder.identity(wallet, config.localUserName).networkConfig(networkConfigPath).discovery(true);
 
         // get the network and contract
         gateway = builder.connect();
-        network = gateway.getNetwork(config.channelName); // mychannel
-        contract = network.getContract(config.contractName); // fabcar
+        network = gateway.getNetwork(config.channelName);  // mychannel
+        contract = network.getContract(config.contractName);  // fabcar
     }
-
-    /*
-     * 白盒模型 用来判决是否满足信誉需求
-     */
+    /* 白盒模型
+     * 用来判决是否满足信誉需求 */
     public static boolean whiteBox(int input) throws Exception {
         if (input >= config.reputation) {
             return true;
         }
         return false;
     }
-
     public static String msgReceive(String data) {
         /*
-         * 收到车辆发送的请求，解析得到json 包括用户名和commit，commit作范围判断估值
-         */
+        收到车辆发送的请求，解析得到json
+        * 包括用户名和commit，commit作范围判断估值*/
 
         return "";
     }
-
     public static void main(String[] args) throws Exception {
-        // InitParam(); // 初始化系统参数
+//        InitParam();  // 初始化系统参数
 
         /* 1. 启动服务器 */
         DatagramPacket receive = new DatagramPacket(new byte[1024], 1024);
-        DatagramSocket server = new DatagramSocket(8888);
+        DatagramSocket server = new DatagramSocket(11999);
 
         System.out.println("-----------------------------------------------------------");
         config.getNowDate(new String("Server current start......"));
@@ -266,67 +268,58 @@ public class serverPlanB {
 
         DatagramSocket client = new DatagramSocket();
 
+
+
+        String judeg = java_py_test.judge_one("40");
+        System.out.println(judeg);
+
+
         while (true) {
             /* 2. 监听到客户端消息 */
             long begin = System.currentTimeMillis();
             server.receive(receive);
-            String recIp = receive.getAddress().getHostAddress(); // IP
-            byte[] msgByte = Arrays.copyOfRange(receive.getData(), 0, receive.getLength()); // 收到消息
+            String recIp = receive.getAddress().getHostAddress();  // IP
+            byte[] msgByte = Arrays.copyOfRange(receive.getData(), 0, receive.getLength());  // 收到消息
 
             String msgRece = new String(msgByte);
             System.out.println(msgRece);
 
-            JSONObject json = JSONObject.parseObject(msgRece); // 字符串转json格式
-            // System.out.println(json);
+            JSONObject json = JSONObject.parseObject(msgRece);  // 字符串转json格式
+//            System.out.println(json);
             /* 收到消息格式 */
             int type = Integer.parseInt(json.getString("Type"));
             String newUserName = json.getString("userID");
 
-            /* 网络参数 */
-            int dstPort = 0;
 
             JsonUtils txt = null;
+
+            int dstPort = 0;
             try {
-                /* 接收到入网信息和接收到创建.id信息 */
-                if (type == 1) {
-                    // 处理加密信誉值
-                    String commit = json.getString("commit");
-                    String judeg = java_py_test.judge_one(new String(config.reputation));
-                     if (judeg) {
+                switch (type) {
+                    case 1:
+                        // 收到离开请求：查询信誉值然后制作token字段
+
+                        JsonUtils tokenJson = null;
+                        String token = JSON.toJSONString(tokenJson);
+
+                        txt = new JsonUtils("2", 0, config.localUserName, "", new String[]{}, "");
+                        dstPort = 10999;
+                    case 0:
+//                    // RSU提前切换
+//                    RegisterUser(newUserName);
                         break;
-                     }
-                    // 返回自身UID
-                    txt = new JsonUtils("2", 0, config.localUserName, "", new String[] {}, "");
-                    dstPort = 9999;
-                } else if (type == 3) {
-                    // 逻辑判断
-                    String uListString = json.getString("uList"); // 得到纯字符串
-                    // System.out.println(uList);
-                    String[] uListStringList = uListString.split("\"");
-                    List list = Arrays.asList(uListStringList);
-                    Set set = new HashSet(list);
-                    String[] uListStringSet = (String[]) set.toArray(new String[0]);
+                    case 4:
+                        // 收到入网申请身份请求，返回身份文件
+                        // 包括身份确认、超时确认
 
-                    int num = 0;
-                    for (int i = 0; i < uListStringSet.length; i++) {
-                        if (uListStringSet[i].length() >= 2) {
-                            num++;
+                        if (1 == 1) {
+                            String content = new String(Files.readAllBytes(Paths.get("wallet/" + newUserName + ".id")));
+                            txt = new JsonUtils("4", 0, config.localUserName, "", new String[]{}, "");
                         }
-                    }
-                    if (num < config.minUIDNum) {
-                        return;
-                    }
-
-                    // 注册身份
-                    long beginReg = System.currentTimeMillis();
-                    RegisterUser(newUserName);
-                    config.getNowDate("认证车注册时长:" + (System.currentTimeMillis() - beginReg) / 1000.0 + "秒");
-
-                    String content = new String(Files.readAllBytes(Paths.get("wallet/" + newUserName + ".id")));
-                    txt = new JsonUtils("4", 0, config.localUserName, "", new String[] {}, content);
-                    dstPort = 10999;
+                        break;
+                    default:
+                        break;
                 }
-                // System.out.println(sendMsg);
                 if (dstPort != 0) {
                     String sendMsg = JSON.toJSONString(txt);
                     byte[] msg = sendMsg.getBytes();
@@ -347,6 +340,7 @@ public class serverPlanB {
             System.out.println("-----------------------------------------------------------");
 
         }
+
 
         // client.close();
     }
