@@ -80,7 +80,7 @@ import com.alibaba.fastjson.JSONObject;
 
 //服务端
 public class serverPlanB {
-    private static final int MAXRECEIVED = 255;
+    private static final int MAXRECEIVED = 256 * 16;
     private Socket socket;
 
     private static String orgName = "org1.example.com";
@@ -267,17 +267,27 @@ public class serverPlanB {
 
         DatagramSocket client = new DatagramSocket();
 
+        String message = "";
+        String recIp = "";
+        long begin = System.currentTimeMillis();
         while (true) {
-            /* 2. 监听到客户端消息 */
-            long begin = System.currentTimeMillis();
-            server.receive(receive);
-            String recIp = receive.getAddress().getHostAddress(); // IP
-            byte[] msgByte = Arrays.copyOfRange(receive.getData(), 0, receive.getLength()); // 收到消息
+            while (true) {
+                /* 2. 监听到客户端消息 */
+                server.receive(receive);
+                recIp = receive.getAddress().getHostAddress(); // IP
+                byte[] msgByte = Arrays.copyOfRange(receive.getData(), 0, receive.getLength()); // 收到消息
+                if (msgByte.length < 1024) {
+                    break;
+                }
+                if (new String(msgByte) == "-1") {
+                    break;
+                }
+                message = message + new String(msgByte);
+    //            System.out.println(new String(msgByte));
+            }
 
-            String msgRece = new String(msgByte);
-            System.out.println(msgRece);
-
-            JSONObject json = JSONObject.parseObject(msgRece); // 字符串转json格式
+            System.out.println(message);
+            JSONObject json = JSONObject.parseObject(message); // 字符串转json格式
             // System.out.println(json);
             /* 收到消息格式 */
             int type = Integer.parseInt(json.getString("Type"));
@@ -294,7 +304,7 @@ public class serverPlanB {
                     String commit = json.getString("commit");
                     saveTXT.saveAstxt(commit);
                     String judeg = java_py_test.judge_one(String.valueOf(config.reputation));
-                    if (judeg == "true" || judeg == "True") {
+                    if (!(judeg == "true" || judeg == "True")) {
                         break;
                     }
                     // 返回自身UID
@@ -348,8 +358,8 @@ public class serverPlanB {
             System.out.println("finish the interaction with user " + newUserName);
             System.out.println("-----------------------------------------------------------");
 
-        }
 
+        }
         // client.close();
     }
 }
