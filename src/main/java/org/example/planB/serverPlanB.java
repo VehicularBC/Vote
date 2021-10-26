@@ -283,7 +283,7 @@ public class serverPlanB {
                     break;
                 }
                 message = message + new String(msgByte);
-    //            System.out.println(new String(msgByte));
+                // System.out.println(new String(msgByte));
             }
 
             System.out.println(message);
@@ -304,6 +304,7 @@ public class serverPlanB {
                     String commit = json.getString("commit");
                     saveTXT.saveAstxt(commit);
                     String judeg = java_py_test.judge_one(String.valueOf(config.reputation));
+                    System.out.println(judeg);
                     if (!(judeg == "true" || judeg == "True")) {
                         break;
                     }
@@ -357,7 +358,6 @@ public class serverPlanB {
             config.getNowDate("认证车总时长:" + (System.currentTimeMillis() - begin) / 1000.0 + "秒");
             System.out.println("finish the interaction with user " + newUserName);
             System.out.println("-----------------------------------------------------------");
-
 
         }
         // client.close();
