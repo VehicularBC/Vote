@@ -267,23 +267,20 @@ public class serverPlanB {
 
         DatagramSocket client = new DatagramSocket();
 
-        String message = "";
-        String recIp = "";
-        long begin = System.currentTimeMillis();
         while (true) {
+            String message = "";
+            String recIp = "";
+            long begin = System.currentTimeMillis();
             while (true) {
                 /* 2. 监听到客户端消息 */
                 server.receive(receive);
                 recIp = receive.getAddress().getHostAddress(); // IP
                 byte[] msgByte = Arrays.copyOfRange(receive.getData(), 0, receive.getLength()); // 收到消息
-                if (msgByte.length < 1024) {
-                    break;
-                }
-                if (new String(msgByte) == "-1") {
+                if (msgByte.length <= 2) {
                     break;
                 }
                 message = message + new String(msgByte);
-                // System.out.println(new String(msgByte));
+                System.out.println(msgByte.length);
             }
 
             System.out.println(message);
@@ -302,12 +299,12 @@ public class serverPlanB {
                 if (type == 1) {
                     // 处理加密信誉值
                     String commit = json.getString("commit");
-                    saveTXT.saveAstxt(commit);
-                    String judeg = java_py_test.judge_one(String.valueOf(config.reputation));
-                    System.out.println(judeg);
-                    if (!(judeg == "true" || judeg == "True")) {
-                        break;
-                    }
+//                    saveTXT.saveAstxt(commit);
+//                    String judeg = java_py_test.judge_one(String.valueOf(config.reputation));
+//                    System.out.println(judeg);
+//                    if (!(judeg == "true" || judeg == "True")) {
+//                        break;
+//                    }
                     // 返回自身UID
                     txt = new JsonUtils("2", 0, config.localUserName, "", new String[] {}, "");
                     dstPort = 9999;

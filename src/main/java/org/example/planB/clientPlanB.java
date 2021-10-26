@@ -127,14 +127,14 @@ public class clientPlanB {
         DatagramPacket sendPack = null;
 
         int beginIdx = 0;
-        while (beginIdx < msgB.length) {
+        while (beginIdx <= msgB.length) {
             byte[] buf = new byte[1024];
             if (beginIdx + buf.length < msgB.length) {
                 System.arraycopy(msgB, beginIdx, buf, 0, buf.length);
                 beginIdx = beginIdx + buf.length;
             } else {
                 System.arraycopy(msgB, beginIdx, buf, 0, msgB.length - beginIdx);
-                beginIdx = msgB.length;
+                beginIdx = msgB.length + 1;
             }
             sendPack = new DatagramPacket(buf, buf.length, inetAddrForBroad, 8888);
             client.send(sendPack);
@@ -190,6 +190,8 @@ public class clientPlanB {
         InetAddress inetAddrForId = InetAddress.getByName(dstIP);
         sendPack = new DatagramPacket(msgB, msgB.length, inetAddrForId, 8888);
         client.send(sendPack);
+        sendPack = new DatagramPacket(byebye, byebye.length, inetAddrForId, 8888);
+        client.send(sendPack);
 
         /* 4. 接收.id文件 */
         String walletContent = "";
@@ -200,6 +202,7 @@ public class clientPlanB {
             config.getNowDate(new String("Handing at client " + recvPacket.getAddress().getHostName() + " ip "
                     + recvPacket.getAddress().getHostAddress() + ", Server Receive Data:" + new String(receiveMsg)));
 
+            System.out.println(new String(receiveMsg));
             JSONObject json = JSONObject.parseObject(new String(receiveMsg));
             if (Integer.parseInt(json.getString("Type")) == 4) {
                 walletContent = json.getString("wC");
