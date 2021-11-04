@@ -34,7 +34,7 @@ public class ClientApp {
 //
 //		Gateway.Builder builder = Gateway.createBuilder();
 
-		builder.identity(wallet, config.localUserName).networkConfig(networkConfigPath).discovery(true);
+		builder.identity(wallet, config.newUserName).networkConfig(networkConfigPath).discovery(true);
 
 		// create a gateway connection
 		try {
@@ -44,33 +44,26 @@ public class ClientApp {
 			Contract contract = network.getContract("fabcar");
 
 			byte[] result;
-//			config.getNowDate(new String(result));
 
-			config.getNowDate(new String("begining"));
-			if (false) {
-				result = contract.createTransaction("Vote").submit("carID1");
-				config.getNowDate(new String(result));
-			} else {
-				result = contract.evaluateTransaction("queryAllCars");
-				config.getNowDate(new String(result));
+			result = contract.evaluateTransaction("queryAllCars");
+			System.out.println("身份合法,查询结果如下: " + new String(result));
 
-				result = contract.submitTransaction("createCar", "CAR10", "VW", "Polo", "Grey", "Mary");
-				config.getNowDate(new String("creating car"));
+			result = contract.submitTransaction("createCar", "CAR10", "VW", "Polo", "Grey", "Mary");
+			System.out.println("身份合法,创建新车成功");
 
-				result = contract.evaluateTransaction("queryCar", "CAR10");
-				config.getNowDate(new String(result));
+			result = contract.evaluateTransaction("queryCar", "CAR10");
+			System.out.println("身份合法,查询车主信息结果如下: " + new String(result));
 
-				contract.submitTransaction("changeCarOwner", "CAR10", "Archie");
-				config.getNowDate(new String("changing car owner"));
+			contract.submitTransaction("changeCarOwner", "CAR10", "Archie");
+			System.out.println("身份合法,修改车主信息成功");
 
-				result = contract.evaluateTransaction("queryCar", "CAR10");
-				config.getNowDate(new String(result));
-			}
+			result = contract.evaluateTransaction("queryCar", "CAR10");
+			System.out.println("身份合法,修改成功" + new String(result));
+
 //			gateway.close();  // 耗时9s
 		} catch (Exception e) {
-            config.getNowDate(new String());
-            e.printStackTrace();
+			System.out.println("身份不合法, 调用链码失败");
+//            e.printStackTrace();
         }
-		config.getNowDate(new String("ending"));
 	}
 }

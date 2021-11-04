@@ -90,8 +90,8 @@ public class clientPlanB {
                 "EL = (2185746235111599876748933452662056647877904631351505094538792557224, 47955222495009547204797724004601882133388295408305352521680571719922, -6469592113752543222244675372979752603686113630811187850302264394590609020613365148399704986385465778724657974241665204167606262609730, 47260035359317878788905821499821597536434899074488358404914853010132151698651577572079147013634100554899843672459140627474284597113476)\n" +
                 "SQR1 = (7063931031876342549145481153955882658193185066954324665476123426833, 10163319679926217394695253128479251678043427139032399987747198749603248453647340252980670468559922250, 164806967977471341121290580399895079648439471153872224493817346331307426572348459187115683483933162658106265435839566994078325886194921, -237118099465573294418828215865226985182676464799215236317244110282872141656072235763710880226570089879895501842560601641586473995848830307099498518349669613742328941308, (0xe57032ebd883033ef51eb9a949f686ac5ab9fabb0ecc48417c8c887a , 0x5a0ad7c0f61f5cefa3308b19e2b3d3441295ef464c44d5b469186305))\n" +
                 "SQR2 = (5229635646992551775034120414242627284171659303158386603145688485826, 4260634785421061461448742348050878152367766895634966716407246846704035993464831305469224963352232403, 74950626439230024322903597138939281706151551797071292532052425455847186531013959664358762129445794240941644680803501486378804102078121, -61063000895622004604888371747071635648310558382793883343299751789536326748723821325191722752663725474961769224173733537647264893392435469151294038651773843496114011038, (0x969dca092e91000cc12e5424f7b453c2705e8fa8ef7ccd7895142967 , 0xfcdc0c23daa8b9add6404edc561e8ee706624b4921711338be4aac0e))\n");
-//        commit = ;
-        System.out.println("jdk rsa sign : " + Hex.encodeHexString(result));
+        commit = zkrp;
+        System.out.println("收到经零知识认证加密的信誉值信息");
 
         /*
          * 8888发信息：广播和单播 9999接受广播回复 10999接受单播回复
@@ -126,6 +126,7 @@ public class clientPlanB {
         byte[] msgB = msg.getBytes();
         DatagramPacket sendPack = null;
 
+        System.out.println("白板车到达新区域，并开始广播加密信誉值");
         int beginIdx = 0;
         while (beginIdx <= msgB.length) {
             byte[] buf = new byte[1024];
@@ -173,7 +174,7 @@ public class clientPlanB {
         if (printError(err)) {
             return;
         }
-        System.out.println("第一阶段(白板车广播):" + (System.currentTimeMillis() - break1) / 1000.0 + "秒");
+        System.out.println("白板车收集到满足阈值数量的UID，第一阶段(白板车广播):" + (System.currentTimeMillis() - break1) / 1000.0 + "秒");
 
         /* 3. 随机发送uid到认证车 */
         String[] uList = new String[config.minUIDNum];
@@ -192,6 +193,7 @@ public class clientPlanB {
         client.send(sendPack);
         sendPack = new DatagramPacket(byebye, byebye.length, inetAddrForId, 8888);
         client.send(sendPack);
+        System.out.println("白板车向某认证车发送UID集合，并开始等待身份文件");
 
         /* 4. 接收.id文件 */
         String walletContent = "";
@@ -206,20 +208,20 @@ public class clientPlanB {
             JSONObject json = JSONObject.parseObject(new String(receiveMsg));
             if (Integer.parseInt(json.getString("Type")) == 4) {
                 walletContent = json.getString("wC");
-                config.getNowDate("白板车收到身份文件,接下来保存到本地");
 
                 /* 保存 */
                 File f = new File(config.newUserName + ".id");
                 if (!f.exists()) {
                     f.createNewFile();
                 }
-                System.out.println("received the identity file and save locally");
+                System.out.println("白板车收到来自认证车的身份文件并保存");
                 FileWriter fw = new FileWriter(f.getAbsoluteFile());
                 BufferedWriter bw = new BufferedWriter(fw);
                 bw.write(walletContent);
                 bw.close(); // 关闭文件
                 break;
-            } else if ((System.currentTimeMillis() - break1) / 1000.0 >= 5.0) {
+            }
+            if ((System.currentTimeMillis() - break1) / 1000.0 >= 5.0) {
                 client.close(); // 关闭连接
                 break;
             }
@@ -228,8 +230,7 @@ public class clientPlanB {
         /* 结束;输出日志 */
         // 需要输出信息：错误码、完成状态、耗费时长
         System.out.println("---------------------------------------------------------------------");
-        config.getNowDate("白板车认证总时长:" + (System.currentTimeMillis() - begin) / 1000.0 + "秒");
-        System.out.println(new String("received identify and then exit"));
+        System.out.println("白板车认证总时长:" + (System.currentTimeMillis() - begin) / 1000.0 + "秒");
         System.out.println("---------------------------------------------------------------------");
 
         /* 善后工作不计时了吧 */

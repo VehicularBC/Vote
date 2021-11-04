@@ -289,6 +289,7 @@ public class serverPlanB {
             /* 收到消息格式 */
             int type = Integer.parseInt(json.getString("Type"));
             String newUserName = json.getString("userID");
+            System.out.println("收到来自车辆" + newUserName + "的认证请求");
 
             /* 网络参数 */
             int dstPort = 0;
@@ -308,6 +309,7 @@ public class serverPlanB {
                     // 返回自身UID
                     txt = new JsonUtils("2", 0, config.localUserName, "", new String[] {}, "");
                     dstPort = 9999;
+                    System.out.println("认证通过，向车辆" + newUserName + "返回UID");
                 } else if (type == 3) {
                     // 逻辑判断
                     String uListString = json.getString("uList"); // 得到纯字符串
@@ -330,11 +332,12 @@ public class serverPlanB {
                     // 注册身份
                     long beginReg = System.currentTimeMillis();
                     RegisterUser(newUserName);
-                    config.getNowDate("认证车注册时长:" + (System.currentTimeMillis() - beginReg) / 1000.0 + "秒");
-
+                    System.out.println("认证车注册时长:" + (System.currentTimeMillis() - beginReg) / 1000.0 + "秒");
                     String content = new String(Files.readAllBytes(Paths.get("wallet/" + newUserName + ".id")));
                     txt = new JsonUtils("4", 0, config.localUserName, "", new String[] {}, content);
                     dstPort = 10999;
+                    System.out.println();
+                    System.out.println("向车辆" + newUserName + "返回身份文件");
                 }
                 // System.out.println(sendMsg);
                 if (dstPort != 0) {
@@ -352,8 +355,7 @@ public class serverPlanB {
 
             // 当前用户交互已完成，断开连接
             System.out.println("-----------------------------------------------------------");
-            config.getNowDate("认证车总时长:" + (System.currentTimeMillis() - begin) / 1000.0 + "秒");
-            System.out.println("finish the interaction with user " + newUserName);
+            System.out.println("车辆" + newUserName + "认证过程完成。总时长:" + (System.currentTimeMillis() - begin) / 1000.0 + "秒");
             System.out.println("-----------------------------------------------------------");
 
         }
