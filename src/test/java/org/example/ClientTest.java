@@ -50,7 +50,8 @@ public class ClientTest {
 			if (ssss == 1) {
 				EnrollAdmin.main(null);
 				RegisterUser.main(null);
-				serverPlanB.main(null);
+				ClientApp.main(null);
+//				serverPlanB.main(null);
 			} else if (ssss == 2) {
 				clientPlanB.main(null);
 				ClientApp.main(null);

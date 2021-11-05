@@ -16,7 +16,7 @@ organizations:
     - ca.org1.example.com
 peers:
   peer0.org1.example.com:
-    url: grpcs://localhost:7051
+    url: grpcs://192.168.2.176:7051
     tlsCACerts:
       pem: |
           -----BEGIN CERTIFICATE-----
@@ -39,7 +39,7 @@ peers:
       hostnameOverride: peer0.org1.example.com
 certificateAuthorities:
   ca.org1.example.com:
-    url: https://localhost:7054
+    url: https://192.168.2.176:7054
     caName: ca-org1
     tlsCACerts:
       pem: 
