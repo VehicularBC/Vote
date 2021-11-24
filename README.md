@@ -19,7 +19,19 @@
 
 ### 链码
 
+我们为待认证车辆设计了一套基于`Golang`的认证合约。已认证车辆调用`vote`函数接口对待认证车辆进行投票。链码内部统计赞成的已认证车辆的数量，若已达到投票阈值，则**最后一个满足待认证车辆投票阈值**的已认证车辆会得到返回值`true`，它需要为待认证车辆注册身份，然后投票过程将会关闭。投票未达到阈值或者投票过程关闭的情况下，车辆继续投票则会得到返回值`false`。
 
+示例使用：
+
+```go
+result, err := contract.SubmitTransaction("Vote", "tempCar2")	//Go SDK 通过投票函数进行投票
+if err != nil {
+	fmt.Printf("Failed to submit transaction: %s\n", err)
+	os.Exit(1)
+}
+// 需要帮助车辆进行注册的已投票车辆获得返回值true
+// 其他车辆收到返回值 false
+```
 
 ### 车间/车网 通信
 
