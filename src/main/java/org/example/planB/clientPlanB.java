@@ -184,7 +184,7 @@ public class clientPlanB {
         // System.out.println(uList);
         txt = new JsonUtils("3", 0, config.newUserName, "", uList, "");
         msg = JSON.toJSONString(txt);
-        System.out.println(msg);
+//        System.out.println(msg);
         msgB = msg.getBytes();
 
         // 三板斧：定义ip、ip包装msg、发送
@@ -201,16 +201,16 @@ public class clientPlanB {
             serverForId.receive(recvPacket);
             byte[] receiveMsg = Arrays.copyOfRange(recvPacket.getData(), recvPacket.getOffset(),
                     recvPacket.getOffset() + recvPacket.getLength());
-            config.getNowDate(new String("Handing at client " + recvPacket.getAddress().getHostName() + " ip "
-                    + recvPacket.getAddress().getHostAddress() + ", Server Receive Data:" + new String(receiveMsg)));
+//            config.getNowDate(new String("Handing at client " + recvPacket.getAddress().getHostName() + " ip "
+//                    + recvPacket.getAddress().getHostAddress() + ", Server Receive Data:" + new String(receiveMsg)));
 
-            System.out.println(new String(receiveMsg));
+//            System.out.println(new String(receiveMsg));
             JSONObject json = JSONObject.parseObject(new String(receiveMsg));
             if (Integer.parseInt(json.getString("Type")) == 4) {
                 walletContent = json.getString("wC");
 
                 /* 保存 */
-                File f = new File(config.newUserName + ".id");
+                File f = new File("wallet/" + config.newUserName + ".id");
                 if (!f.exists()) {
                     f.createNewFile();
                 }

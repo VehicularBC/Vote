@@ -280,10 +280,10 @@ public class serverPlanB {
                     break;
                 }
                 message = message + new String(msgByte);
-                System.out.println(msgByte.length);
+//                System.out.println(msgByte.length);
             }
 
-            System.out.println(message);
+//            System.out.println(message);
             JSONObject json = JSONObject.parseObject(message); // 字符串转json格式
             // System.out.println(json);
             /* 收到消息格式 */
@@ -330,6 +330,7 @@ public class serverPlanB {
                     }
 
                     // 注册身份
+                    System.out.println("收到来自待认证车的身份制作请求");
                     long beginReg = System.currentTimeMillis();
                     RegisterUser(newUserName);
                     System.out.println("认证车注册时长:" + (System.currentTimeMillis() - beginReg) / 1000.0 + "秒");
