@@ -105,9 +105,7 @@ public class ClientPlanC {
                 } else if ((System.currentTimeMillis() - break1) / 1000.0 >= 5.0) {
                     client.close(); // 关闭连接
                     break;
-
-
-            }
+                }
         }
 
         long start = 0;

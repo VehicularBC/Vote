@@ -159,6 +159,14 @@ public class RSUPlanc {
         }
         return new String(voteResult, StandardCharsets.UTF_8);
     }
+    public static String getUserReputation() throws Exception {
+        try {
+            result = contract.SubmitTransaction("GetSDKuserId")
+            System.out.println("身份合法,查询结果如下: " + new String(result));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private static void InitParam() throws Exception  {
         Path networkConfigPath = Paths.get("src", "main", "resources", "crypto-config", "peerOrganizations", orgName, orgConnectionName);
