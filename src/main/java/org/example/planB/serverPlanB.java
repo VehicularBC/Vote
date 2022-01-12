@@ -14,12 +14,7 @@ import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
-import java.util.Set;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Properties;
-import java.util.List;
-import java.util.HashSet;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.text.SimpleDateFormat;
 import java.net.Socket;
@@ -266,99 +261,140 @@ public class serverPlanB {
         System.out.println("-----------------------------------------------------------");
 
         DatagramSocket client = new DatagramSocket();
-
+        int flag =0;
         while (true) {
-            String message = "";
-            String recIp = "";
+         //   String message = "";
+            HashMap<String,String> messagemap = new HashMap<String,String>();
+           // String recIp = "";
             long begin = System.currentTimeMillis();
+            ArrayList<String> recIp = new ArrayList<String>();
             while (true) {
+
                 /* 2. 监听到客户端消息 */
                 server.receive(receive);
-                recIp = receive.getAddress().getHostAddress(); // IP
-                byte[] msgByte = Arrays.copyOfRange(receive.getData(), 0, receive.getLength()); // 收到消息
-                if (msgByte.length <= 2) {
+             //   System.out.println(flag);
+                //recIp = receive.getAddress().getHostAddress(); // IP
+                byte[] msgByte = Arrays.copyOfRange(receive.getData(), 0, receive.getLength());
+                String msgString = new String(msgByte,"UTF-8");
+             //   if(msgString.length()>20) System.out.println(msgString.substring(0,14));
+
+                if(flag!=0&&flag==messagemap.size()){
+                    System.out.println("flag is "+ flag + "跳出接收循环");
                     break;
                 }
-                message = message + new String(msgByte);
+                System.out.println(msgString);
+                if(msgString.substring(0,1).equals("1")){
+                    messagemap.put(receive.getAddress().getHostAddress(),msgString.substring(config.newUserName.length()+1,msgString.length()));
+                    System.out.println("收到车辆发送的UID");
+                    System.out.println(msgString.substring(config.newUserName.length()+1,msgString.length()));
+                    recIp.add(receive.getAddress().getHostAddress());
+                    flag++;
+                    continue;
+                }
+                if(messagemap.containsKey(receive.getAddress().getHostAddress())){
+                    String oldmess = messagemap.get(receive.getAddress().getHostAddress());
+                    oldmess = oldmess + msgString.substring(config.newUserName.length()-1,msgString.length());
+                    messagemap.put(receive.getAddress().getHostAddress(),oldmess);
+                  //  System.out.println(oldmess);
+                  //  System.out.println("flag is "+ flag);
+                    if(oldmess.length() > 2048) {
+                        flag++;
+                    }
+                }
+                else {
+                    messagemap.put(receive.getAddress().getHostAddress(),msgString.substring(config.newUserName.length(),msgString.length()));
+                    recIp.add(receive.getAddress().getHostAddress());
+                }
+
+              //  byte[] msgByte = Arrays.copyOfRange(receive.getData(), 0, receive.getLength()); // 收到消息
+
+              //  message = message + new String(msgByte);
 //                System.out.println(msgByte.length);
             }
 
 //            System.out.println(message);
-            JSONObject json = JSONObject.parseObject(message); // 字符串转json格式
-            // System.out.println(json);
-            /* 收到消息格式 */
-            int type = Integer.parseInt(json.getString("Type"));
-            String newUserName = json.getString("userID");
-            System.out.println("收到来自车辆" + newUserName + "的认证请求");
+            for(int i = 0;i<recIp.size();i++){
+                //System.out.println(messagemap.get(recIp.get(i)));
+                System.out.println("收到的消息为"+messagemap.get(recIp.get(i)));
+                JSONObject json = JSONObject.parseObject(messagemap.get(recIp.get(i)));
+                int type = Integer.parseInt(json.getString("Type"));
 
-            /* 网络参数 */
-            int dstPort = 0;
+                String newUserName = json.getString("userID");
+                System.out.println("收到来自车辆" + newUserName + "的认证请求");
 
-            JsonUtils txt = null;
-            try {
-                /* 接收到入网信息和接收到创建.id信息 */
-                if (type == 1) {
-                    // 处理加密信誉值
-                    String commit = json.getString("commit");
+                /* 网络参数 */
+                int dstPort = 0;
+
+                JsonUtils txt = null;
+                try {
+                    /* 接收到入网信息和接收到创建.id信息 */
+                    if (type == 1) {
+                        // 处理加密信誉值
+                        String commit = json.getString("commit");
 //                    saveTXT.saveAstxt(commit);
 //                    String judeg = java_py_test.judge_one(String.valueOf(config.reputation));
 //                    System.out.println(judeg);
 //                    if (!(judeg == "true" || judeg == "True")) {
 //                        break;
 //                    }
-                    // 返回自身UID
-                    txt = new JsonUtils("2", 0, config.localUserName, "", new String[] {}, "");
-                    dstPort = 9999;
-                    System.out.println("认证通过，向车辆" + newUserName + "返回UID");
-                } else if (type == 3) {
-                    // 逻辑判断
-                    String uListString = json.getString("uList"); // 得到纯字符串
-                    // System.out.println(uList);
-                    String[] uListStringList = uListString.split("\"");
-                    List list = Arrays.asList(uListStringList);
-                    Set set = new HashSet(list);
-                    String[] uListStringSet = (String[]) set.toArray(new String[0]);
+                        // 返回自身UID
+                        txt = new JsonUtils("2", 0, config.localUserName, "", new String[] {}, "");
+                        dstPort = 9999;
+                        System.out.println("认证通过，向车辆" + newUserName + "返回UID");
+                    } else if (type == 3) {
+                        // 逻辑判断
+                        System.out.println("进入type3");
+                        String uListString = json.getString("uList"); // 得到纯字符串
+                        // System.out.println(uList);
+                        String[] uListStringList = uListString.split("\"");
+                        List list = Arrays.asList(uListStringList);
+                        Set set = new HashSet(list);
+                        String[] uListStringSet = (String[]) set.toArray(new String[0]);
 
-                    int num = 0;
-                    for (int i = 0; i < uListStringSet.length; i++) {
-                        if (uListStringSet[i].length() >= 2) {
-                            num++;
+                        int num = 0;
+                        for (int j = 0; j < uListStringSet.length; j++) {
+                            if (uListStringSet[j].length() >= 2) {
+                                num++;
+                            }
                         }
-                    }
-                    if (num < config.minUIDNum) {
-                        return;
-                    }
+                        if (num < config.minUIDNum) {
+                            return;
+                        }
 
-                    // 注册身份
-                    System.out.println("收到来自待认证车的身份制作请求");
-                    long beginReg = System.currentTimeMillis();
-                    RegisterUser(newUserName);
-                    System.out.println("认证车注册时长:" + (System.currentTimeMillis() - beginReg) / 1000.0 + "秒");
-                    String content = new String(Files.readAllBytes(Paths.get("wallet/" + newUserName + ".id")));
-                    txt = new JsonUtils("4", 0, config.localUserName, "", new String[] {}, content);
-                    dstPort = 10999;
-                    System.out.println();
-                    System.out.println("向车辆" + newUserName + "返回身份文件");
-                }
-                // System.out.println(sendMsg);
-                if (dstPort != 0) {
-                    String sendMsg = JSON.toJSONString(txt);
-                    byte[] msg = sendMsg.getBytes();
+                        // 注册身份
+                        System.out.println("收到来自待认证车的身份制作请求");
+                        long beginReg = System.currentTimeMillis();
+                        RegisterUser(newUserName);
+                        System.out.println("认证车注册时长:" + (System.currentTimeMillis() - beginReg) / 1000.0 + "秒");
+                        String content = new String(Files.readAllBytes(Paths.get("wallet/" + newUserName + ".id")));
+                        txt = new JsonUtils("4", 0, config.localUserName, "", new String[] {}, content);
+                        dstPort = 10999;
+                        System.out.println();
+                        System.out.println("向车辆" + newUserName + "返回身份文件");
+                    }
+                    // System.out.println(sendMsg);
+                    if (dstPort != 0) {
+                        String sendMsg = JSON.toJSONString(txt);
+                        byte[] msg = sendMsg.getBytes();
 
-                    InetAddress inetAddr = InetAddress.getByName(recIp);
-                    SocketAddress socketAddr = new InetSocketAddress(inetAddr, dstPort);
-                    DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, socketAddr);
-                    client.send(sendPacket);
+                        InetAddress inetAddr = InetAddress.getByName(recIp.get(i));
+                        SocketAddress socketAddr = new InetSocketAddress(inetAddr, dstPort);
+                        DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, socketAddr);
+                        client.send(sendPacket);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+
+                // 当前用户交互已完成，断开连接
+                System.out.println("-----------------------------------------------------------");
+                System.out.println("车辆" + newUserName + "认证过程完成。总时长:" + (System.currentTimeMillis() - begin) / 1000.0 + "秒");
+                System.out.println("-----------------------------------------------------------");
+
             }
-
-            // 当前用户交互已完成，断开连接
-            System.out.println("-----------------------------------------------------------");
-            System.out.println("车辆" + newUserName + "认证过程完成。总时长:" + (System.currentTimeMillis() - begin) / 1000.0 + "秒");
-            System.out.println("-----------------------------------------------------------");
-
+            messagemap.clear();
+            flag = 0;
+        //    System.out.println(852852);
         }
         // client.close();
     }

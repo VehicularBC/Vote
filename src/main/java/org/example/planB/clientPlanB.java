@@ -4,6 +4,8 @@ package org.example;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
+import java.sql.SQLOutput;
 import java.util.Arrays;
 import java.io.File;
 import java.io.FileWriter;
@@ -67,6 +69,7 @@ public class clientPlanB {
         // 传入carRep
         int carReputation = config.reputation;
         String zkrp = java_py_test.produce("75");
+//        System.out.println(zkrp);
 
         // 数字签名
         Signature signature = Signature.getInstance("MD5withRSA");
@@ -120,29 +123,56 @@ public class clientPlanB {
 //        txt.setErrCode(1);
         String msg = JSON.toJSONString(txt);
 //        msg = DeflaterUtils.zipString(msg);
-        System.out.println(msg);
+//        System.out.println(msg);
         // System.out.println("jdk rsa sign : " + msg);
         // #################################################################
         byte[] msgB = msg.getBytes();
         DatagramPacket sendPack = null;
 
         System.out.println("白板车到达新区域，并开始广播加密信誉值");
-        int beginIdx = 0;
-        while (beginIdx <= msgB.length) {
+
+        int beginIdx = 0;//定义报文起始flag
+        while (beginIdx <= msgB.length) { //未指向最后，进入循环
+            //添加用户唯一名作为标识序号，接收后需删除
+            byte[] userName = config.newUserName.getBytes(StandardCharsets.UTF_8);
             byte[] buf = new byte[1024];
             if (beginIdx + buf.length < msgB.length) {
-                System.arraycopy(msgB, beginIdx, buf, 0, buf.length);
-                beginIdx = beginIdx + buf.length;
+                System.arraycopy(userName, 0, buf, 0, userName.length);
+                System.arraycopy(msgB, beginIdx, buf, userName.length, buf.length-userName.length);
+                beginIdx = beginIdx + buf.length-userName.length;
             } else {
-                System.arraycopy(msgB, beginIdx, buf, 0, msgB.length - beginIdx);
+                System.arraycopy(userName, 0, buf, 0, userName.length);
+                System.arraycopy(msgB, beginIdx, buf, (userName.length + 1), msgB.length - beginIdx);
                 beginIdx = msgB.length + 1;
             }
             sendPack = new DatagramPacket(buf, buf.length, inetAddrForBroad, 8888);
             client.send(sendPack);
+          //  System.out.println(sendPack);
+//            System.out.println(new String(buf, "UTF-8"));
+            Thread.currentThread().sleep(2000);
         }
         byte[] byebye = new String("-1").getBytes();
         sendPack = new DatagramPacket(byebye, byebye.length, inetAddrForBroad, 8888);
         client.send(sendPack);
+
+
+
+//        int beginIdx = 0;
+//        while (beginIdx <= msgB.length) {
+//            byte[] buf = new byte[1024];
+//            if (beginIdx + buf.length < msgB.length) {
+//                System.arraycopy(msgB, beginIdx, buf, 0, buf.length);
+//                beginIdx = beginIdx + buf.length;
+//            } else {
+//                System.arraycopy(msgB, beginIdx, buf, 0, msgB.length - beginIdx);
+//                beginIdx = msgB.length + 1;
+//            }
+//            sendPack = new DatagramPacket(buf, buf.length, inetAddrForBroad, 8888);
+//            client.send(sendPack);
+//        }
+//        byte[] byebye = new String("-1").getBytes();
+//        sendPack = new DatagramPacket(byebye, byebye.length, inetAddrForBroad, 8888);
+//        client.send(sendPack);
 
         /* 2. 开启服务器，等待接收信息 */
         long break1 = System.currentTimeMillis();
@@ -185,7 +215,9 @@ public class clientPlanB {
         txt = new JsonUtils("3", 0, config.newUserName, "", uList, "");
         msg = JSON.toJSONString(txt);
 //        System.out.println(msg);
-        msgB = msg.getBytes();
+        //String msg1 = "1"+msg;
+        msgB = ("1"+config.newUserName + msg).getBytes();
+       // System.out.println(msg1);
 
         // 三板斧：定义ip、ip包装msg、发送
         InetAddress inetAddrForId = InetAddress.getByName(dstIP);
