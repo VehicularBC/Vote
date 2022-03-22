@@ -68,6 +68,7 @@ public class clientPlanB {
 
         // 传入carRep
         int carReputation = config.reputation;
+
         String zkrp = java_py_test.produce("75");
 //        System.out.println(zkrp);
 
@@ -123,7 +124,7 @@ public class clientPlanB {
 //        txt.setErrCode(1);
         String msg = JSON.toJSONString(txt);
 //        msg = DeflaterUtils.zipString(msg);
-//        System.out.println(msg);
+        System.out.println(msg);
         // System.out.println("jdk rsa sign : " + msg);
         // #################################################################
         byte[] msgB = msg.getBytes();
@@ -132,7 +133,7 @@ public class clientPlanB {
         System.out.println("白板车到达新区域，并开始广播加密信誉值");
 
         int beginIdx = 0;//定义报文起始flag
-        while (beginIdx <= msgB.length) { //未指向最后，进入循环
+        while (beginIdx <= msgB.length) { //未指向最后，进入循环   分段发送加密信息
             //添加用户唯一名作为标识序号，接收后需删除
             byte[] userName = config.newUserName.getBytes(StandardCharsets.UTF_8);
             byte[] buf = new byte[1024];
@@ -152,8 +153,8 @@ public class clientPlanB {
             Thread.currentThread().sleep(2000);
         }
         byte[] byebye = new String("-1").getBytes();
-        sendPack = new DatagramPacket(byebye, byebye.length, inetAddrForBroad, 8888);
-        client.send(sendPack);
+   //     sendPack = new DatagramPacket(byebye, byebye.length, inetAddrForBroad, 8888);
+    //    client.send(sendPack);
 
 
 
@@ -218,13 +219,13 @@ public class clientPlanB {
         //String msg1 = "1"+msg;
         msgB = ("1"+config.newUserName + msg).getBytes();
        // System.out.println(msg1);
-
+        System.out.println(msgB);
         // 三板斧：定义ip、ip包装msg、发送
         InetAddress inetAddrForId = InetAddress.getByName(dstIP);
         sendPack = new DatagramPacket(msgB, msgB.length, inetAddrForId, 8888);
         client.send(sendPack);
-        sendPack = new DatagramPacket(byebye, byebye.length, inetAddrForId, 8888);
-        client.send(sendPack);
+     //   sendPack = new DatagramPacket(byebye, byebye.length, inetAddrForId, 8888);
+      //  client.send(sendPack);
         System.out.println("白板车向某认证车发送UID集合，并开始等待身份文件");
 
         /* 4. 接收.id文件 */
@@ -236,13 +237,14 @@ public class clientPlanB {
 //            config.getNowDate(new String("Handing at client " + recvPacket.getAddress().getHostName() + " ip "
 //                    + recvPacket.getAddress().getHostAddress() + ", Server Receive Data:" + new String(receiveMsg)));
 
-//            System.out.println(new String(receiveMsg));
+//            walletContent = "111";
+            System.out.println(new String(walletContent));
             JSONObject json = JSONObject.parseObject(new String(receiveMsg));
             if (Integer.parseInt(json.getString("Type")) == 4) {
                 walletContent = json.getString("wC");
 
                 /* 保存 */
-                File f = new File("wallet/" + config.newUserName + ".id");
+                File f = new File("newwallet/" + config.newUserName + ".id");
                 if (!f.exists()) {
                     f.createNewFile();
                 }
