@@ -68,8 +68,8 @@ public class ClientPlanC {
         String dstIP = null;
 
         InetAddress inetAddrForBroad = InetAddress.getByName("255.255.255.255");  //Broad address
-        InetAddress inetAddrForRSU = InetAddress.getByName("192.168.1.132");  
-        InetAddress inetAddrForRSU2 = InetAddress.getByName("192.168.1.76");
+        InetAddress inetAddrForRSU = InetAddress.getByName("192.168.1.103");
+        InetAddress inetAddrForRSU2 = InetAddress.getByName("192.168.1.7");
         DatagramSocket client = new DatagramSocket();
         DatagramPacket recvPacket = new DatagramPacket(new byte[MAXREV], MAXREV);
         DatagramSocket serverForId = new DatagramSocket(10999);
@@ -82,7 +82,7 @@ public class ClientPlanC {
         msgB = msg.getBytes();
         DatagramPacket sendPack = new DatagramPacket(msgB, msgB.length, inetAddrForRSU, 8888);
         client.send(sendPack);   //向前一区域RSU发送离开请求
-        config.getNowDate("Send the leaving request to the RSU.");
+        config.getNowDate("1 向RSU发送离开请求");
         long break1 = System.currentTimeMillis();
         while (!leaveState) {
             // 等返回token
@@ -96,16 +96,19 @@ public class ClientPlanC {
                 JSONObject json = JSONObject.parseObject(new String(receiveMsg));  //将消息转换为Json
                 if (Integer.parseInt(json.getString("Type")) == 2) {
                     // 保存token
-                    config.getNowDate("Got the encrypted token from RSU.");
+                    config.getNowDate("2 从RSU得到加密Token");
                     config.token = json.getString("token");
                     String tokengot = RSAUtils.decrypt(config.token, org.example.RSAUtils.keyMap.get(1));  //将加密的Token解密
                     config.tokenhash= tokengot.hashCode();  //计算Token哈希值
+                    config.getNowDate("3 Token解密完成，存储完成");
                     leaveState = true ;
                     break;
                 } else if ((System.currentTimeMillis() - break1) / 1000.0 >= 5.0) {
                     client.close(); // 关闭连接
                     break;
-                }
+
+
+            }
         }
 
         long start = 0;
@@ -120,11 +123,11 @@ public class ClientPlanC {
             msgB = msg.getBytes();
             sendPack = new DatagramPacket(msgB, msgB.length, inetAddrForRSU2, 9999);
 
-            TimeUnit.MILLISECONDS.sleep(800);//延时800ms，模拟跨区过程
+            TimeUnit.MILLISECONDS.sleep(600);//延时600ms，模拟跨区过程
 
             start = System.currentTimeMillis();
             client.send(sendPack);          //进入下一区域，将token的哈希值传递给该区域RSU，开始计时
-            config.getNowDate("The hash value of the token had been transmitted to the next RSU.");
+            config.getNowDate("4 Token哈希值已发往下一区域RSU");
 
             /* 接收.id文件 */
             String walletContent = "";
@@ -148,7 +151,7 @@ public class ClientPlanC {
                     BufferedWriter bw = new BufferedWriter(fw);
                     bw.write(walletContent);
                     bw.close();    // 关闭文件
-                    config.getNowDate("The identity file had been received and saved locally.");
+                    config.getNowDate("5 收到身份文件，保存完成");
                     break;
 
                 } else if ((System.currentTimeMillis() - break2) / 1000.0 >= 5.0) {
@@ -162,7 +165,7 @@ public class ClientPlanC {
         /* 结束;输出日志 */
         // 需要输出信息：错误码、完成状态、耗费时长
         System.out.println("---------------------------------------------------------------------");
-        config.getNowDate("白板车认证总时长:" + (System.currentTimeMillis() - start) / 1000.0 + "秒");
+        config.getNowDate("白板车认证总时长:" + (System.currentTimeMillis() - start) + "ms");
         System.out.println(new String("exit"));
         System.out.println("---------------------------------------------------------------------");
 

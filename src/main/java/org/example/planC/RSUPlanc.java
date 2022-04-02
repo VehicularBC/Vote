@@ -159,14 +159,6 @@ public class RSUPlanc {
         }
         return new String(voteResult, StandardCharsets.UTF_8);
     }
-    public static String getUserReputation() throws Exception {
-        try {
-            result = contract.SubmitTransaction("GetSDKuserId")
-            System.out.println("身份合法,查询结果如下: " + new String(result));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     private static void InitParam() throws Exception  {
         Path networkConfigPath = Paths.get("src", "main", "resources", "crypto-config", "peerOrganizations", orgName, orgConnectionName);
@@ -282,8 +274,8 @@ public class RSUPlanc {
 
         InetAddress inetAddrForBroad = InetAddress.getByName("255.255.255.255");
         InetAddress inetAddrForCar = InetAddress.getByName("192.168.1.75");
-        InetAddress inetAddrForRSU = InetAddress.getByName("192.168.1.132");
-        InetAddress inetAddrForRSU2 = InetAddress.getByName("192.168.1.76");
+        InetAddress inetAddrForRSU = InetAddress.getByName("192.168.1.103");
+        InetAddress inetAddrForRSU2 = InetAddress.getByName("192.168.1.7");
 
 
         String judeg = java_py_test.judge_one("40");
@@ -330,16 +322,18 @@ public class RSUPlanc {
                         content = new String(Files.readAllBytes(Paths.get("wallet/" + newUserName + ".id")));
                         idbuffer.add(content);     //存储身份文件
                         hashbuffer.add(hashgot);   //存储token的哈希值
-                        config.getNowDate("The vehicle has been registered, and the hash value of the toke and the ID information have been stored");
+                        config.getNowDate("The vehicle has been registered, and the hash value of the toke and the ID information have been stored" +
+                                "车辆注册完成，Token哈希值以及身份文件已存储完成");
                         break;
 
 
                     case 1:     // 收到车辆离开请求：查询信誉值然后制作token字段，将其加密后传给白板车以及下一区域RSU
 
-                        config.getNowDate("Got a leaving request from a vehicle, start making a token for the vehicle and the next RSU.");
+                        config.getNowDate("Got a leaving request from a vehicle, start making a token for the vehicle and the next RSU." +
+                                "收到车辆离开请求，开始制作Token");
                         long requestTime = json.getLong("curTime");
                         int reputation = 70;
-//加个消息
+                        config.getNowDate("Got the reputation of the car.");
                         byte[] msg2car = null;
                         byte[] msg2RSU2 = null;
 
@@ -364,13 +358,14 @@ public class RSUPlanc {
                         DatagramPacket sendPacktoRSU2 = new DatagramPacket(msg2RSU2, msg2RSU2.length, inetAddrForRSU2, 9999);
                         server.send(sendPacktoRSU2);   //将token发送给下一个RSU
 
-                        config.getNowDate("Send the token to the vehicle and the next RSU.");
+                        config.getNowDate("Send the token to the vehicle and the next RSU." +
+                                "Token已加密发送至车辆以及下一区域RSU");
 
                         break;
 
 
                     case 3:     //收到小车发来的Token的哈希值，与缓存中的哈希值进行对比，若成功，则使用token中的信息为小车注册身份，并将身份文件返回给小车，在缓存中将该token以及对应的哈希值删除。
-                        config.getNowDate("Got a hash value of a token from a vehicle");
+                        config.getNowDate("从车辆处收到Token哈希值");
                         int tokenhash = json.getInteger("hash");
 
                         if(hashbuffer.contains(tokenhash)){  //对比哈希值
@@ -384,7 +379,7 @@ public class RSUPlanc {
                             byte[] id2car = id.getBytes();   //Message to car
                             sendPacktoCar = new DatagramPacket(id2car, id2car.length, inetAddrForCar, 10999);
                             server.send(sendPacktoCar);    //将存有身份信息的消息传给白板车
-                            config.getNowDate("Hash matched，The ID information has been transmitted to the vehicle.");
+                            config.getNowDate("哈希值匹配完成，身份文件已发送至车辆");
                             hashbuffer.remove(ind);        //删除缓存
                             idbuffer.remove(ind);
 
