@@ -51,9 +51,9 @@ public class config {
     public static boolean muteAll = false;
 
     // plan C
-    public static String token = "";
+    public static String token = null;
     public static int tokenhash = 0;
-
+    public static long requestTime = 0;
 
 
     public static void getNowDate(String action) {
