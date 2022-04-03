@@ -28,8 +28,7 @@ public class EnrollAdmin {
 	public static void main(String[] args) throws Exception {
 		// Create a CA client for interacting with the CA.
 		Properties props = new Properties();
-		props.put("pemFile", "src/main/resources/crypto-config/" +
-				"peerOrganizations/" + config.pemDir);
+		props.put("pemFile", "src/main/resources/crypto-config/" + "peerOrganizations/" + config.pemDir);
 		props.put("allowAllHostNames", "true");
 		HFCAClient caClient = HFCAClient.createNewInstance("https://" + config.peerHostIp + ":" + config.peerHostPort, props);
 		CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
