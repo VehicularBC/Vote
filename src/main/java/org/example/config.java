@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class config {
 
-    public static String peerHostIp = "";
+    public static String peerHostIp = "192.168.2.156";
     public static String peerHostPort = "7054";  // 默认如此
     public static String MSPId = "Org1MSP";
     public static String orgNumber = "org1.example.com";
@@ -36,8 +36,8 @@ public class config {
     public static String contractName = "fabcar";
     public static String contractFuncName = "Vote";
 
-//    public static String newUserName = new String("n" + String.valueOf(System.currentTimeMillis()));
-    public static String newUserName = "n1635493009281";
+    public static String newUserName = new String("n" + String.valueOf(System.currentTimeMillis()));
+//    public static String newUserName = "n1635493009281";
 
 
     public static int port1 = 8888;  // 一阶段广播地址
@@ -52,6 +52,8 @@ public class config {
 
     // plan C
     public static String token = "";
+    public static int tokenhash = 0;
+
 
 
     public static void getNowDate(String action) {

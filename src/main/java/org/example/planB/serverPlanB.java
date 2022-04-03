@@ -250,7 +250,8 @@ public class serverPlanB {
     }
 
     public static void main(String[] args) throws Exception {
-        // InitParam(); // 初始化系统参数
+         InitParam(); // 初始化系统参数
+        config.reputation = Integer.parseInt(new String(contract.submitTransaction("GetLatestTrustValue", config.localUserName)));
 
         /* 1. 启动服务器 */
         DatagramPacket receive = new DatagramPacket(new byte[1024], 1024);
@@ -340,6 +341,10 @@ public class serverPlanB {
                         // 返回自身UID
                         txt = new JsonUtils("2", 0, config.localUserName, "", new String[] {}, "");
                         dstPort = 9999;
+
+                        byte[] result = contract.submitTransaction("CreateTrustValue", config.localUserName, "5", newUserName);
+                        System.out.println(new String(result));
+
                         System.out.println("认证通过，向车辆" + newUserName + "返回UID");
                     } else if (type == 3) {
                         // 逻辑判断
